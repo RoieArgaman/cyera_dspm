@@ -7,23 +7,14 @@ export class BasePage {
     this.page = page;
   }
 
-  /**
-   * Navigate to the given path (relative to baseURL).
-   */
   async navigate(path: string): Promise<void> {
     await this.page.goto(path, { waitUntil: 'networkidle' });
   }
 
-  /**
-   * Wait for a locator to be visible.
-   */
   async waitForVisible(locator: Locator, timeout = 30_000): Promise<void> {
     await locator.waitFor({ state: 'visible', timeout });
   }
 
-  /**
-   * Wait for a locator to be hidden.
-   */
   async waitForHidden(locator: Locator, timeout = 30_000): Promise<void> {
     await locator.waitFor({ state: 'hidden', timeout });
   }

@@ -18,7 +18,7 @@ test.describe('Alert Auto-Remediation — API', () => {
     // Step 1: Start a scan
     logger.info('Step 1: Starting initial scan');
     const scan1 = await api.scans.start();
-    expect(scan1.id).toBeTruthy();
+    expect(scan1.id, 'First scan should return a valid ID').toBeTruthy();
     logger.info(`Scan started with ID: ${scan1.id}`);
 
     // Step 2: Wait for scan to complete
@@ -62,7 +62,7 @@ test.describe('Alert Auto-Remediation — API', () => {
     // Step 7: Start another scan
     logger.info('Step 7: Starting second scan');
     const scan2 = await api.scans.start();
-    expect(scan2.id).toBeTruthy();
+    expect(scan2.id, 'Second scan should return a valid ID').toBeTruthy();
 
     // Step 8: Wait for second scan to complete
     logger.info('Step 8: Waiting for second scan to complete');

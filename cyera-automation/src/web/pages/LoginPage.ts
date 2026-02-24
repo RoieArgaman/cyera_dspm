@@ -1,15 +1,18 @@
 import type { Page } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { step } from '../../test/stepDecorator';
 
 export class LoginPage extends BasePage {
   constructor(page: Page) {
     super(page);
   }
 
+  @step('Navigate to login page')
   async goto(): Promise<void> {
     await this.navigate('/');
   }
 
+  @step('Log in')
   async login(username: string, password: string): Promise<void> {
     await this.page.locator('#username').fill(username);
     await this.page.locator('#password').fill(password);

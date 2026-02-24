@@ -1,4 +1,4 @@
-import { test as setup } from '@playwright/test';
+import { test as setup, expect } from '../fixtures';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
@@ -20,7 +20,10 @@ setup('authenticate via browser and save session', async ({ page }) => {
   await page.locator('#username').fill(USERNAME);
   await page.locator('#password').fill(PASSWORD);
   await page.locator('button[type="submit"]').click();
-  await page.waitForURL('**/policies', { timeout: 15_000 });
+  await expect(
+    page,
+    'Auth setup should land on the policies page after login'
+  ).toHaveURL(/\/policies$/, { timeout: 15_000 });
 
   // Save browser storage state
   const sessionPath = path.join(authDir, 'session.json');

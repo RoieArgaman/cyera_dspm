@@ -1,16 +1,22 @@
 import type { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { step } from '../../test/stepDecorator';
 
 export class AlertsPage extends BasePage {
-  private readonly alertsTable: Locator;
-  private readonly loadingState: Locator;
+  readonly alertsPageRoot: Locator;
+  readonly alertsTable: Locator;
+  readonly loadingState: Locator;
+  readonly alertRows: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.alertsTable = page.locator('table[aria-label="Alerts list"]');
-    this.loadingState = page.locator('text=Loading alerts...');
+    this.alertsPageRoot = page.getByTestId('alerts-page');
+    this.alertsTable = page.getByRole('table', { name: 'Alerts list' });
+    this.loadingState = page.getByText('Loading alerts...');
+    this.alertRows = this.alertsTable.locator('tbody tr');
   }
 
+  @step('Navigate to Alerts page')
   async goto(): Promise<void> {
     await this.navigate('/alerts');
     try {
@@ -21,26 +27,28 @@ export class AlertsPage extends BasePage {
   }
 
   getAlertRows(): Locator {
-    return this.alertsTable.locator('tbody tr');
+    return this.alertRows;
   }
 
   async getAlertCount(): Promise<number> {
-    return this.getAlertRows().count();
+    return this.alertRows.count();
   }
 
+  @step('Click alert by index')
   async clickAlertByIndex(index: number): Promise<void> {
-    await this.getAlertRows().nth(index).click();
+    await this.alertRows.nth(index).click();
   }
 
   /**
    * Find and click the first alert row matching the given status text and auto-remediate value.
    * Returns the row index, or -1 if not found.
    */
+  @step('Click first alert matching status and auto-remediate')
   async clickFirstAlertByStatusAndAutoRemediate(
     statusText: string,
     autoRemediate: boolean
   ): Promise<number> {
-    const rows = this.getAlertRows();
+    const rows = this.alertRows;
     const count = await rows.count();
 
     for (let i = 0; i < count; i++) {
@@ -66,6 +74,6 @@ export class AlertsPage extends BasePage {
   }
 
   async waitForAlerts(timeout = 30_000): Promise<void> {
-    await this.alertsTable.locator('tbody tr').first().waitFor({ state: 'visible', timeout });
+    await this.waitForVisible(this.alertsTable, timeout);
   }
 }

@@ -15,8 +15,10 @@ export default defineConfig({
   reporter: [
     ['html', { open: 'never' }],
     ['json', { outputFile: 'test-results/results.json' }],
+      ['list', { outputFile: 'test-results/list.json' }],
   ],
   use: {
+    headless: false,
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',

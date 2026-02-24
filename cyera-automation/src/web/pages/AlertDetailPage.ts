@@ -1,5 +1,6 @@
 import type { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { step } from '../../test/stepDecorator';
 
 export class AlertDetailPage extends BasePage {
   private readonly drawer: Locator;
@@ -21,10 +22,19 @@ export class AlertDetailPage extends BasePage {
     this.postCommentButton = page.getByRole('button', { name: 'Post Comment' });
   }
 
+  get drawerRoot(): Locator {
+    return this.drawer;
+  }
+
+  get statusLabel(): Locator {
+    return this.statusSelect;
+  }
+
   async waitForDrawer(timeout = 15_000): Promise<void> {
     await this.waitForVisible(this.drawer, timeout);
   }
 
+  @step('Change alert status')
   async changeStatus(newStatus: string): Promise<void> {
     await this.statusSelect.click();
     await this.page.locator('[role="option"]').filter({ hasText: newStatus }).click();
@@ -45,6 +55,7 @@ export class AlertDetailPage extends BasePage {
     }
   }
 
+  @step('Remediate alert')
   async remediate(note?: string): Promise<void> {
     await this.expandSection('Remediation');
     if (note) {
@@ -54,6 +65,7 @@ export class AlertDetailPage extends BasePage {
     await this.page.waitForTimeout(2000);
   }
 
+  @step('Add comment to alert')
   async addComment(message: string): Promise<void> {
     await this.expandSection('Comments');
     await this.commentTextarea.fill(message);
@@ -63,21 +75,6 @@ export class AlertDetailPage extends BasePage {
 
   async getCurrentStatus(): Promise<string> {
     return (await this.statusSelect.textContent())?.trim() ?? '';
-  }
-
-  /**
-   * Polls the status display until it contains the expected text.
-   */
-  async waitForStatusText(expectedText: string, timeout = 120_000): Promise<void> {
-    const start = Date.now();
-    while (Date.now() - start < timeout) {
-      const current = await this.getCurrentStatus();
-      if (current.toLowerCase().includes(expectedText.toLowerCase())) {
-        return;
-      }
-      await this.page.waitForTimeout(2000);
-    }
-    throw new Error(`Timed out waiting for status text "${expectedText}" after ${timeout}ms`);
   }
 
   async closeDrawer(): Promise<void> {

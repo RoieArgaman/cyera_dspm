@@ -1,111 +1,77 @@
 # DSPM Platform — Playwright Test Automation Framework
 
-Automated end-to-end and API testing framework for the DSPM platform, built with Playwright and TypeScript.
+Automated end-to-end and API testing for the DSPM platform (Playwright + TypeScript).
 
 ## Prerequisites
 
 - **Node.js** 18+ (LTS recommended)
-- **Docker** and **Docker Compose**
+- **Docker** — Download and install Docker (Docker Desktop or Docker engine) and have it **running** before starting the platform.
 
-## Getting Started
+## What to Do
 
-### 1. Start the DSPM Platform
+### One-time setup
 
-```bash
-docker compose up -d
-```
-
-Web app: `http://localhost:3000` | API: `http://localhost:8080`
-
-### 2. Install Dependencies
+From `cyera-automation/`:
 
 ```bash
-cd cyera-automation
 npm install
 npx playwright install chromium
-```
-
-### 3. Configure Environment
-
-Copy `.env.example` to `.env` and set your password:
-
-```bash
 cp .env.example .env
 ```
 
-## Running Tests
+Edit `.env` and set `ADMIN_PASSWORD` to your desired admin password (for example, change `ADMIN_PASSWORD=your_password_here` to a real value). This value should live **only** in your local `.env` file, which is git-ignored and must not be committed.
+
+### Start the platform
+
+From `cyera-automation/`:
 
 ```bash
-npx playwright test              # all tests
-npx playwright test --project=ui # UI tests only
-npx playwright test --project=api # API tests only
-npx playwright show-report       # view HTML report
+npm run start
 ```
 
-## Project Structure
+Then open **http://localhost:3000** and log in with **admin** and the password you configured in your local `.env` (`ADMIN_PASSWORD`).
 
-```
-cyera-automation/
-├── playwright.config.ts          # Config: setup/teardown projects, Chrome only
-├── .auth/                        # Generated at runtime (gitignored)
-│   ├── session.json              # Browser storage state
-│   └── token.json                # API bearer token
-├── src/
-│   ├── types.ts                  # Shared TypeScript interfaces
-│   ├── logger.ts                 # Winston logger (console + file)
-│   ├── wait.ts                   # Polling helpers (waitForAlertStatus, waitForScanComplete)
-│   ├── api/
-│   │   ├── ApiClient.ts          # Aggregates all API resource clients
-│   │   └── clients/
-│   │       ├── BaseApiClient.ts  # Axios base with auth header + logging
-│   │       ├── AlertsClient.ts   # /api/alerts endpoints
-│   │       ├── ScansClient.ts    # /api/scans endpoints
-│   │       ├── PolicyClient.ts   # /api/policy-config endpoint
-│   │       └── AdminClient.ts    # /api/admin/reset & /api/health
-│   └── web/
-│       ├── WebApp.ts             # Aggregates all page objects
-│       └── pages/
-│           ├── BasePage.ts       # Base page with common helpers
-│           ├── LoginPage.ts      # Login page object
-│           ├── AlertsPage.ts     # Alerts list page object
-│           └── AlertDetailPage.ts# Alert detail drawer page object
-├── fixtures/
-│   └── index.ts                  # Custom fixtures: app (WebApp), api (ApiClient)
-├── tests/
-│   ├── auth.setup.ts             # Setup: browser login + API token (runs first)
-│   ├── teardown.setup.ts         # Teardown: reset DB (runs last)
-│   ├── ui/
-│   │   └── alert-manual-remediation.spec.ts
-│   └── api/
-│       ├── alert-auto-remediation.spec.ts
-│       └── component/
-│           ├── alerts.spec.ts
-│           ├── scans.spec.ts
-│           └── policy.spec.ts
-└── logs/                         # Generated at runtime (gitignored)
+**What happens:** The script checks Docker is running, unzips the platform from `platform Assignment.zip` into `platform-home-assignment/`, fixes Docker credential config if needed, runs `docker compose up -d`, and waits for the API to be healthy. Web app: `http://localhost:3000` | API: `http://localhost:8080`.
+
+### Run tests
+
+With the platform running:
+
+```bash
+npm test              # all tests
+npm run test:ui       # UI only
+npm run test:api      # API only
+npm run e2e           # start platform then run all tests
+npm run report        # open HTML report
 ```
 
-## How It Works
+## Project structure (short)
 
-1. **Setup project** (`auth.setup.ts`) runs first as a Playwright test — logs in via the browser using `page` (Chromium only), saves `storageState` to `.auth/session.json`, and fetches an API token to `.auth/token.json`.
-2. **UI tests** depend on setup — `page` is pre-authenticated via `storageState`. The `app` fixture provides a `WebApp` instance that aggregates all page objects (`app.alerts`, `app.alertDetail`, `app.login`).
-3. **API tests** depend on setup — the `api` fixture provides an `ApiClient` instance that aggregates all resource clients (`api.alerts`, `api.scans`, `api.policy`, `api.admin`).
-4. **Teardown project** (`teardown.setup.ts`) runs last — calls `POST /api/admin/reset` to restore the DB.
+- `scripts/start-platform.sh` — Unzip, fix Docker, start compose, health check.
+- `src/api/` — API clients. `src/web/` — Page objects.
+- `tests/ui/` — UI specs. `tests/api/` — API and component specs.
+- `fixtures/` — Playwright fixtures (app, api). Auth and teardown run via setup projects.
 
-## Tests
+For **Playwright Page Object and test guidelines**, see `AGENTS.md` in this directory.
 
-| Test | Description |
-|------|-------------|
-| **alert-manual-remediation** (UI) | Full remediation workflow: OPEN → IN_PROGRESS → Remediate → RESOLVED |
-| **alert-auto-remediation** (API) | Auto-remediation lifecycle with re-scan. **Expected to fail by design** — the platform re-creates alerts after a new scan. |
-| **alerts** (API component) | CRUD: list, filter, get by ID, status transitions, comments |
-| **scans** (API component) | Start scan, get by ID, check status |
-| **policy** (API component) | GET /api/policy-config structure validation |
+## Logging and test steps
 
-## Notes
+We use a centralized Winston logger (`src/logger.ts`) plus a Playwright step decorator (`src/test/stepDecorator.ts`).
 
-- **Chrome only** — all browser tests run on Chromium.
-- **Workers: 1** — avoids shared database conflicts.
-- **Class hierarchy** — API clients extend `BaseApiClient` (axios + auth + logging), page objects extend `BasePage` (navigation + visibility helpers). `ApiClient` and `WebApp` aggregate their respective sub-classes.
-- **Polling utilities** (`waitForAlertStatus`, `waitForScanComplete`) are used for async status checks.
-- **All API calls** are logged via Winston (console + `logs/run.log`).
+- **Logger**
+  - Use `logger.info` / `logger.debug` for normal operations.
+  - Use `logger.warn` / `logger.error` for exceptional events and failures.
+  - The logger writes human‑readable logs to stdout (info/debug) and stderr (warn/error), which are visible via `docker compose logs -f`.
+  - API clients log all requests, responses, and errors via `BaseApiClient` interceptors.
+
+- **Playwright `@step` decorator**
+  - For high‑level page‑object methods (navigation, remediation, comments, etc.), use `@step('Description')` from `src/test/stepDecorator`.
+  - The decorator:
+    - Logs `info` with the step message and arguments.
+    - Wraps the method in `test.step(...)` so it appears in Playwright reports and traces.
+    - Logs `error` if the method throws, then rethrows so the test still fails.
+
+- **Rules**
+  - Do **not** use `console.log` / `console.warn` in `cyera-automation`; always use `logger`.
+  - In UI tests, interact through page objects and rely on `@step` for meaningful, readable steps.
+  - Do **not** log secrets or sensitive payloads; prefer IDs, counts, and statuses.
