@@ -1,0 +1,22 @@
+{
+  "name": "cyera-automation",
+  "version": "1.0.0",
+  "description": "Playwright TypeScript test automation framework for DSPM platform",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --project=ui",
+    "test:api": "npx playwright test --project=api",
+    "report": "npx playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.42.0",
+    "@types/node": "^25.3.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.4.0",
+    "winston": "^3.11.0"
+  }
+}
