@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -16,25 +16,37 @@ export default defineConfig({
     ['html', { open: 'never' }],
     ['json', { outputFile: 'test-results/results.json' }],
   ],
-  globalSetup: './global-setup.ts',
-  globalTeardown: './global-teardown.ts',
   use: {
     baseURL: BASE_URL,
-    storageState: '.auth/session.json',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
   projects: [
     {
+      name: 'setup',
+      testMatch: 'tests/auth.setup.ts',
+      use: {
+        browserName: 'chromium',
+      },
+    },
+    {
       name: 'ui',
       testMatch: 'tests/ui/**/*.spec.ts',
+      dependencies: ['setup'],
       use: {
-        ...devices['Desktop Chrome'],
+        browserName: 'chromium',
+        storageState: '.auth/session.json',
       },
     },
     {
       name: 'api',
       testMatch: 'tests/api/**/*.spec.ts',
+      dependencies: ['setup'],
+    },
+    {
+      name: 'teardown',
+      testMatch: 'tests/teardown.setup.ts',
+      dependencies: ['ui', 'api'],
     },
   ],
 });

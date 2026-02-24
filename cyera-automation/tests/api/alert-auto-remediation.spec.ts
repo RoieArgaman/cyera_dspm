@@ -7,31 +7,28 @@
  * (same policy, same asset) is re-created with status OPEN. In the current
  * system, the scanning engine will re-detect the same violation and create
  * a new OPEN alert even after the previous one was resolved. This is a known
- * limitation / intentional behavior of the mock platform to demonstrate that
- * the auto-remediation flow does not prevent re-detection of the same issue.
- *
- * The test documents this expected failure and logs the failure context clearly.
+ * limitation / intentional behavior of the mock platform.
  */
 import { test, expect } from '../../fixtures';
-import { waitForScanComplete, waitForAlertStatus } from '../../src/utils/wait';
-import { logger } from '../../src/utils/logger';
+import { getAlerts, getAlertById, updateAlertStatus, addAlertComment, startScan } from '../../src/api';
+import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
+import { logger } from '../../src/logger';
 
 test.describe('Alert Auto-Remediation — API', () => {
   test('auto-remediation lifecycle with re-scan verification (expected to FAIL)', async ({ api }) => {
     // Step 1: Start a scan
     logger.info('Step 1: Starting initial scan');
-    const scan1 = await api.scans.start();
+    const scan1 = await startScan(api);
     expect(scan1.id).toBeTruthy();
     logger.info(`Scan started with ID: ${scan1.id}`);
 
     // Step 2: Wait for scan to complete
     logger.info('Step 2: Waiting for initial scan to complete');
     await waitForScanComplete(api, scan1.id, { timeoutMs: 120_000 });
-    logger.info('Initial scan completed');
 
-    // Step 3: Find an alert with status OPEN or REMEDIATION_IN_PROGRESS and autoRemediate: true
+    // Step 3: Find an alert with autoRemediate: true
     logger.info('Step 3: Finding auto-remediate alert');
-    const allAlerts = await api.alerts.getAll();
+    const allAlerts = await getAlerts(api);
     logger.info(`Total alerts found: ${allAlerts.length}`);
 
     const autoRemAlert = allAlerts.find(
@@ -40,13 +37,13 @@ test.describe('Alert Auto-Remediation — API', () => {
         a.policySnapshot?.autoRemediate === true
     );
 
-    expect(autoRemAlert, 'Expected to find an auto-remediate alert with status OPEN or REMEDIATION_IN_PROGRESS').toBeTruthy();
+    expect(autoRemAlert, 'Expected to find an auto-remediate alert').toBeTruthy();
     const alertId = autoRemAlert!.id;
     const alertPolicyId = autoRemAlert!.policyId;
     const alertAssetLocation = autoRemAlert!.assetLocation;
     logger.info(`Found auto-remediate alert: ${alertId} (policy: ${alertPolicyId}, asset: ${alertAssetLocation})`);
 
-    // Step 4: Wait for status to become REMEDIATED_WAITING_FOR_CUSTOMER or RESOLVED
+    // Step 4: Wait for auto-remediation to complete
     logger.info('Step 4: Waiting for auto-remediation to complete');
     await waitForAlertStatus(api, alertId, ['REMEDIATED_WAITING_FOR_CUSTOMER', 'RESOLVED'], {
       timeoutMs: 120_000,
@@ -54,30 +51,27 @@ test.describe('Alert Auto-Remediation — API', () => {
 
     // Step 5: Set status to RESOLVED
     logger.info('Step 5: Setting alert status to RESOLVED');
-    const currentAlert = await api.alerts.getById(alertId);
+    const currentAlert = await getAlertById(api, alertId);
     if (currentAlert.status !== 'RESOLVED') {
-      await api.alerts.updateStatus(alertId, 'RESOLVED');
+      await updateAlertStatus(api, alertId, 'RESOLVED');
     }
-    logger.info(`Alert ${alertId} is now RESOLVED`);
 
-    // Step 6: Add comment confirming resolution
+    // Step 6: Add comment
     logger.info('Step 6: Adding resolution comment');
-    await api.alerts.addComment(alertId, 'Remediation verified successfully and issue is resolved');
+    await addAlertComment(api, alertId, 'Remediation verified successfully and issue is resolved');
 
     // Step 7: Start another scan
     logger.info('Step 7: Starting second scan');
-    const scan2 = await api.scans.start();
+    const scan2 = await startScan(api);
     expect(scan2.id).toBeTruthy();
-    logger.info(`Second scan started with ID: ${scan2.id}`);
 
     // Step 8: Wait for second scan to complete
     logger.info('Step 8: Waiting for second scan to complete');
     await waitForScanComplete(api, scan2.id, { timeoutMs: 120_000 });
-    logger.info('Second scan completed');
 
-    // Step 9: Query alerts to find any identical alert (same policy, same asset) that is OPEN
+    // Step 9: Check for re-created identical alerts
     logger.info('Step 9: Checking for re-created identical alerts');
-    const alertsAfterSecondScan = await api.alerts.getAll();
+    const alertsAfterSecondScan = await getAlerts(api);
     const identicalOpenAlerts = alertsAfterSecondScan.filter(
       (a) =>
         a.policyId === alertPolicyId &&
@@ -90,18 +84,16 @@ test.describe('Alert Auto-Remediation — API', () => {
 
     if (identicalOpenAlerts.length > 0) {
       logger.error(
-        `EXPECTED FAILURE: Found ${identicalOpenAlerts.length} re-created identical alert(s) after second scan. ` +
-        `Alert IDs: [${identicalOpenAlerts.map((a) => a.id).join(', ')}]. ` +
-        `This confirms the known limitation: the scanning engine re-detects resolved violations ` +
-        `and creates new OPEN alerts even after auto-remediation and resolution.`
+        `EXPECTED FAILURE: ${identicalOpenAlerts.length} re-created alert(s). ` +
+        `IDs: [${identicalOpenAlerts.map((a) => a.id).join(', ')}]. ` +
+        `The scanning engine re-detects resolved violations and creates new OPEN alerts.`
       );
     }
 
-    // Step 10: Assert none exist — this is EXPECTED TO FAIL by design
+    // Step 10: Assert none exist — EXPECTED TO FAIL by design
     expect(
       identicalOpenAlerts,
-      'Expected no identical OPEN alerts after second scan (this assertion is expected to fail by design — ' +
-      'the platform re-creates alerts for the same policy/asset combination after a new scan)'
+      'Expected no identical OPEN alerts after second scan (expected to fail by design)'
     ).toHaveLength(0);
   });
 });

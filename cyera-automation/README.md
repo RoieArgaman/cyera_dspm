@@ -1,109 +1,68 @@
 # DSPM Platform — Playwright Test Automation Framework
 
-Automated end-to-end and API testing framework for the DSPM (Data Security Posture Management) platform, built with Playwright and TypeScript.
+Automated end-to-end and API testing framework for the DSPM platform, built with Playwright and TypeScript.
 
 ## Prerequisites
 
 - **Node.js** 18+ (LTS recommended)
-- **Docker** and **Docker Compose** (to run the DSPM platform locally)
+- **Docker** and **Docker Compose**
 
 ## Getting Started
 
 ### 1. Start the DSPM Platform
 
-From the platform project root:
-
 ```bash
 docker compose up -d
 ```
 
-This starts:
-- **Web app** on `http://localhost:3000`
-- **API server** on `http://localhost:8080`
-
-Wait for both services to be healthy before running tests.
+Web app: `http://localhost:3000` | API: `http://localhost:8080`
 
 ### 2. Install Dependencies
 
 ```bash
 cd cyera-automation
 npm install
-npx playwright install
+npx playwright install chromium
 ```
 
 ### 3. Configure Environment
 
-The `.env` file is pre-configured with defaults:
+Copy `.env.example` to `.env` and set your password:
 
-```env
-BASE_URL=http://localhost:3000
-API_URL=http://localhost:8080
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=Aa123456
+```bash
+cp .env.example .env
 ```
-
-Adjust if your local setup uses different ports.
 
 ## Running Tests
 
-### Run All Tests
-
 ```bash
-npx playwright test
-```
-
-### Run UI Tests Only
-
-```bash
-npx playwright test --project=ui
-```
-
-### Run API Tests Only
-
-```bash
-npx playwright test --project=api
-```
-
-### View HTML Report
-
-```bash
-npx playwright show-report
+npx playwright test              # all tests
+npx playwright test --project=ui # UI tests only
+npx playwright test --project=api # API tests only
+npx playwright show-report       # view HTML report
 ```
 
 ## Project Structure
 
 ```
 cyera-automation/
-├── playwright.config.ts          # Playwright configuration
-├── global-setup.ts               # Auth setup (browser + API login)
-├── global-teardown.ts            # Environment reset after all tests
+├── playwright.config.ts          # Config: setup/teardown projects, Chrome only
 ├── .auth/                        # Generated at runtime (gitignored)
 │   ├── session.json              # Browser storage state
 │   └── token.json                # API bearer token
 ├── src/
-│   ├── web/
-│   │   ├── WebApp.ts             # Aggregates all page objects
-│   │   └── pages/
-│   │       ├── BasePage.ts       # Base page with common helpers
-│   │       ├── LoginPage.ts      # Login page object
-│   │       ├── AlertsPage.ts     # Alerts list page object
-│   │       └── AlertDetailPage.ts# Alert detail drawer page object
-│   ├── api/
-│   │   ├── ApiClient.ts          # Aggregates all API resource clients
-│   │   └── clients/
-│   │       ├── BaseApiClient.ts  # Axios base with auth, logging
-│   │       ├── AlertsClient.ts   # /api/alerts endpoints
-│   │       ├── ScansClient.ts    # /api/scans endpoints
-│   │       ├── PolicyClient.ts   # /api/policies & /api/policy-config
-│   │       └── AdminClient.ts    # /api/admin/reset & /api/health
-│   ├── types/
-│   │   └── index.ts              # Shared TypeScript interfaces
-│   └── utils/
-│       ├── logger.ts             # Winston logger (console + file)
-│       └── wait.ts               # Polling helpers for async operations
+│   ├── api.ts                    # API helper functions (axios-based)
+│   ├── types.ts                  # Shared TypeScript interfaces
+│   ├── logger.ts                 # Winston logger (console + file)
+│   ├── wait.ts                   # Polling helpers (waitForAlertStatus, waitForScanComplete)
+│   └── pages/
+│       ├── AlertsPage.ts         # Alerts list page object
+│       └── AlertDetailPage.ts    # Alert detail drawer page object
 ├── fixtures/
-│   └── index.ts                  # Custom Playwright fixtures (app, api)
+│   └── index.ts                  # Extends base test with `api` fixture (axios instance)
 ├── tests/
+│   ├── auth.setup.ts             # Setup: browser login + API token (runs first)
+│   ├── teardown.setup.ts         # Teardown: reset DB (runs last)
 │   ├── ui/
 │   │   └── alert-manual-remediation.spec.ts
 │   └── api/
@@ -115,26 +74,27 @@ cyera-automation/
 └── logs/                         # Generated at runtime (gitignored)
 ```
 
-## Test Descriptions
+## How It Works
 
-### UI Tests
+1. **Setup project** (`auth.setup.ts`) runs first as a Playwright test — logs in via the browser using `page` (Chromium only), saves `storageState` to `.auth/session.json`, and fetches an API token to `.auth/token.json`.
+2. **UI tests** depend on setup — `page` is pre-authenticated via `storageState`. Page objects are instantiated directly in each test.
+3. **API tests** depend on setup — the `api` fixture provides a configured axios instance with the bearer token.
+4. **Teardown project** (`teardown.setup.ts`) runs last — calls `POST /api/admin/reset` to restore the DB.
 
-- **alert-manual-remediation.spec.ts** — Full manual remediation workflow through the UI: find an OPEN alert, transition to IN_PROGRESS, assign to an analyst, trigger remediation, wait for async completion, resolve, and verify.
+## Tests
 
-### API Tests
+| Test | Description |
+|------|-------------|
+| **alert-manual-remediation** (UI) | Full remediation workflow: OPEN → IN_PROGRESS → Remediate → RESOLVED |
+| **alert-auto-remediation** (API) | Auto-remediation lifecycle with re-scan. **Expected to fail by design** — the platform re-creates alerts after a new scan. |
+| **alerts** (API component) | CRUD: list, filter, get by ID, status transitions, comments |
+| **scans** (API component) | Start scan, get by ID, check status |
+| **policy** (API component) | GET /api/policy-config structure validation |
 
-- **alert-auto-remediation.spec.ts** — Auto-remediation lifecycle: start a scan, find an auto-remediate alert, wait for resolution, re-scan, and verify no duplicate OPEN alerts are created. **This test is expected to fail by design** — the platform intentionally re-creates alerts for the same policy/asset after a new scan, demonstrating a known limitation of the mock system.
+## Notes
 
-### API Component Tests
-
-- **alerts.spec.ts** — CRUD operations on alerts: list, filter, get by ID, status transitions, and comments.
-- **scans.spec.ts** — Scan lifecycle: start scan, get by ID, check status.
-- **policy.spec.ts** — Policy configuration endpoint: verify structure and expected fields.
-
-## Architecture Notes
-
-- **Authentication** is handled once in `global-setup.ts` — browser login saves `storageState`, API login saves a bearer token. All tests start pre-authenticated.
-- **Cleanup** runs in `global-teardown.ts` via `POST /api/admin/reset`, restoring the database to defaults after all tests.
-- **Workers** are set to 1 to avoid database conflicts.
-- **Polling utilities** (`waitForAlertStatus`, `waitForScanComplete`) are used for all async status checks — no arbitrary timeouts.
+- **Chrome only** — all browser tests run on Chromium.
+- **Workers: 1** — avoids shared database conflicts.
+- **No abstract base classes** — page objects and API helpers are simple, standalone.
+- **Polling utilities** (`waitForAlertStatus`, `waitForScanComplete`) are used for async status checks.
 - **All API calls** are logged via Winston (console + `logs/run.log`).

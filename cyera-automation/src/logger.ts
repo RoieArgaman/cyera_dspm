@@ -2,7 +2,7 @@ import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
 
-const logsDir = path.resolve(__dirname, '../../logs');
+const logsDir = path.resolve(__dirname, '../logs');
 fs.mkdirSync(logsDir, { recursive: true });
 
 export const logger = winston.createLogger({

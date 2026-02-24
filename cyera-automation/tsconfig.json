@@ -8,26 +8,15 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": ".",
-    "baseUrl": ".",
-    "paths": {
-      "@web/*": ["src/web/*"],
-      "@api/*": ["src/api/*"],
-      "@types/*": ["src/types/*"],
-      "@utils/*": ["src/utils/*"],
-      "@fixtures/*": ["fixtures/*"]
-    }
+    "baseUrl": "."
   },
   "include": [
     "src/**/*.ts",
     "fixtures/**/*.ts",
     "tests/**/*.ts",
-    "global-setup.ts",
-    "global-teardown.ts",
     "playwright.config.ts"
   ],
   "exclude": ["node_modules", "dist"]
