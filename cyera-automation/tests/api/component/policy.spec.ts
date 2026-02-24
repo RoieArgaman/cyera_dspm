@@ -1,14 +1,13 @@
 import { test, expect } from '../../../fixtures';
-import { getPolicyConfig } from '../../../src/api';
 
 test.describe('Policy API — Component Tests', () => {
   test('GET /api/policy-config returns 200', async ({ api }) => {
-    const config = await getPolicyConfig(api);
+    const config = await api.policy.getConfig();
     expect(config).toBeTruthy();
   });
 
   test('Response contains expected policy fields', async ({ api }) => {
-    const config = await getPolicyConfig(api);
+    const config = await api.policy.getConfig();
 
     expect(config.assets).toBeTruthy();
     expect(config.enums).toBeTruthy();

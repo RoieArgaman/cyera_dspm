@@ -2,7 +2,7 @@ import { test as teardown } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
-import { createApiClient, resetData } from '../src/api';
+import { ApiClient } from '../src/api/ApiClient';
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
@@ -17,7 +17,7 @@ teardown('reset environment after all tests', async () => {
   }
 
   const tokenData = JSON.parse(fs.readFileSync(tokenPath, 'utf-8'));
-  const api = createApiClient(API_URL, tokenData.token);
-  const result = await resetData(api);
+  const api = new ApiClient(API_URL, tokenData.token);
+  const result = await api.admin.resetData();
   console.log(`[teardown] Environment reset: ${result.message}`);
 });

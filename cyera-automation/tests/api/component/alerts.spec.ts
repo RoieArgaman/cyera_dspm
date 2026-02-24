@@ -1,15 +1,14 @@
 import { test, expect } from '../../../fixtures';
-import { getAlerts, getOpenAlerts, getAlertById, updateAlertStatus, addAlertComment } from '../../../src/api';
 import type { Alert, AlertStatus } from '../../../src/types';
 
 test.describe('Alerts API — Component Tests', () => {
   test('GET all alerts returns 200 and array', async ({ api }) => {
-    const alerts = await getAlerts(api);
+    const alerts = await api.alerts.getAll();
     expect(Array.isArray(alerts)).toBe(true);
   });
 
   test('Filter alerts by status OPEN returns only open alerts', async ({ api }) => {
-    const openAlerts = await getOpenAlerts(api);
+    const openAlerts = await api.alerts.getOpen();
     expect(Array.isArray(openAlerts)).toBe(true);
 
     for (const alert of openAlerts) {
@@ -18,11 +17,11 @@ test.describe('Alerts API — Component Tests', () => {
   });
 
   test('GET alert by ID returns correct alert', async ({ api }) => {
-    const alerts = await getAlerts(api);
+    const alerts = await api.alerts.getAll();
     expect(alerts.length).toBeGreaterThan(0);
 
     const targetId = alerts[0].id;
-    const alert = await getAlertById(api, targetId);
+    const alert = await api.alerts.getById(targetId);
 
     expect(alert).toBeTruthy();
     expect(alert.id).toBe(targetId);
@@ -32,19 +31,19 @@ test.describe('Alerts API — Component Tests', () => {
   });
 
   test('PATCH alert status follows valid transitions only', async ({ api }) => {
-    const alerts = await getAlerts(api);
+    const alerts = await api.alerts.getAll();
     const openAlert = alerts.find((a: Alert) => a.status === 'OPEN');
     expect(openAlert, 'Need an OPEN alert for transition testing').toBeTruthy();
 
     const alertId = openAlert!.id;
 
     // Valid transition: OPEN -> IN_PROGRESS
-    const updated = await updateAlertStatus(api, alertId, 'IN_PROGRESS');
+    const updated = await api.alerts.updateStatus(alertId, 'IN_PROGRESS');
     expect(updated.status).toBe('IN_PROGRESS');
 
     // Invalid transition: IN_PROGRESS -> OPEN
     try {
-      await updateAlertStatus(api, alertId, 'OPEN' as AlertStatus);
+      await api.alerts.updateStatus(alertId, 'OPEN' as AlertStatus);
       expect(true, 'Expected the API to reject OPEN transition from IN_PROGRESS').toBe(false);
     } catch (error: unknown) {
       if (isAxiosError(error)) {
@@ -55,22 +54,22 @@ test.describe('Alerts API — Component Tests', () => {
     }
 
     // Valid transition: IN_PROGRESS -> RESOLVED
-    const resolved = await updateAlertStatus(api, alertId, 'RESOLVED');
+    const resolved = await api.alerts.updateStatus(alertId, 'RESOLVED');
     expect(resolved.status).toBe('RESOLVED');
 
     // Cleanup: reopen so other tests can use it
-    const reopened = await updateAlertStatus(api, alertId, 'REOPEN');
+    const reopened = await api.alerts.updateStatus(alertId, 'REOPEN');
     expect(reopened.status).toBe('REOPEN');
   });
 
   test('POST comment to alert succeeds', async ({ api }) => {
-    const alerts = await getAlerts(api);
+    const alerts = await api.alerts.getAll();
     expect(alerts.length).toBeGreaterThan(0);
 
     const alertId = alerts[0].id;
     const commentMessage = `Test comment at ${new Date().toISOString()}`;
 
-    const comment = await addAlertComment(api, alertId, commentMessage);
+    const comment = await api.alerts.addComment(alertId, commentMessage);
 
     expect(comment).toBeTruthy();
     expect(comment.id).toBeTruthy();

@@ -51,15 +51,26 @@ cyera-automation/
 │   ├── session.json              # Browser storage state
 │   └── token.json                # API bearer token
 ├── src/
-│   ├── api.ts                    # API helper functions (axios-based)
 │   ├── types.ts                  # Shared TypeScript interfaces
 │   ├── logger.ts                 # Winston logger (console + file)
 │   ├── wait.ts                   # Polling helpers (waitForAlertStatus, waitForScanComplete)
-│   └── pages/
-│       ├── AlertsPage.ts         # Alerts list page object
-│       └── AlertDetailPage.ts    # Alert detail drawer page object
+│   ├── api/
+│   │   ├── ApiClient.ts          # Aggregates all API resource clients
+│   │   └── clients/
+│   │       ├── BaseApiClient.ts  # Axios base with auth header + logging
+│   │       ├── AlertsClient.ts   # /api/alerts endpoints
+│   │       ├── ScansClient.ts    # /api/scans endpoints
+│   │       ├── PolicyClient.ts   # /api/policy-config endpoint
+│   │       └── AdminClient.ts    # /api/admin/reset & /api/health
+│   └── web/
+│       ├── WebApp.ts             # Aggregates all page objects
+│       └── pages/
+│           ├── BasePage.ts       # Base page with common helpers
+│           ├── LoginPage.ts      # Login page object
+│           ├── AlertsPage.ts     # Alerts list page object
+│           └── AlertDetailPage.ts# Alert detail drawer page object
 ├── fixtures/
-│   └── index.ts                  # Extends base test with `api` fixture (axios instance)
+│   └── index.ts                  # Custom fixtures: app (WebApp), api (ApiClient)
 ├── tests/
 │   ├── auth.setup.ts             # Setup: browser login + API token (runs first)
 │   ├── teardown.setup.ts         # Teardown: reset DB (runs last)
@@ -77,8 +88,8 @@ cyera-automation/
 ## How It Works
 
 1. **Setup project** (`auth.setup.ts`) runs first as a Playwright test — logs in via the browser using `page` (Chromium only), saves `storageState` to `.auth/session.json`, and fetches an API token to `.auth/token.json`.
-2. **UI tests** depend on setup — `page` is pre-authenticated via `storageState`. Page objects are instantiated directly in each test.
-3. **API tests** depend on setup — the `api` fixture provides a configured axios instance with the bearer token.
+2. **UI tests** depend on setup — `page` is pre-authenticated via `storageState`. The `app` fixture provides a `WebApp` instance that aggregates all page objects (`app.alerts`, `app.alertDetail`, `app.login`).
+3. **API tests** depend on setup — the `api` fixture provides an `ApiClient` instance that aggregates all resource clients (`api.alerts`, `api.scans`, `api.policy`, `api.admin`).
 4. **Teardown project** (`teardown.setup.ts`) runs last — calls `POST /api/admin/reset` to restore the DB.
 
 ## Tests
@@ -95,6 +106,6 @@ cyera-automation/
 
 - **Chrome only** — all browser tests run on Chromium.
 - **Workers: 1** — avoids shared database conflicts.
-- **No abstract base classes** — page objects and API helpers are simple, standalone.
+- **Class hierarchy** — API clients extend `BaseApiClient` (axios + auth + logging), page objects extend `BasePage` (navigation + visibility helpers). `ApiClient` and `WebApp` aggregate their respective sub-classes.
 - **Polling utilities** (`waitForAlertStatus`, `waitForScanComplete`) are used for async status checks.
 - **All API calls** are logged via Winston (console + `logs/run.log`).

@@ -10,7 +10,6 @@
  * limitation / intentional behavior of the mock platform.
  */
 import { test, expect } from '../../fixtures';
-import { getAlerts, getAlertById, updateAlertStatus, addAlertComment, startScan } from '../../src/api';
 import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
 import { logger } from '../../src/logger';
 
@@ -18,7 +17,7 @@ test.describe('Alert Auto-Remediation — API', () => {
   test('auto-remediation lifecycle with re-scan verification (expected to FAIL)', async ({ api }) => {
     // Step 1: Start a scan
     logger.info('Step 1: Starting initial scan');
-    const scan1 = await startScan(api);
+    const scan1 = await api.scans.start();
     expect(scan1.id).toBeTruthy();
     logger.info(`Scan started with ID: ${scan1.id}`);
 
@@ -28,13 +27,13 @@ test.describe('Alert Auto-Remediation — API', () => {
 
     // Step 3: Find an alert with autoRemediate: true
     logger.info('Step 3: Finding auto-remediate alert');
-    const allAlerts = await getAlerts(api);
+    const allAlerts = await api.alerts.getAll();
     logger.info(`Total alerts found: ${allAlerts.length}`);
 
     const autoRemAlert = allAlerts.find(
       (a) =>
         (a.status === 'OPEN' || a.status === 'REMEDIATION_IN_PROGRESS') &&
-        a.policySnapshot?.autoRemediate === true
+        a.autoRemediate === true
     );
 
     expect(autoRemAlert, 'Expected to find an auto-remediate alert').toBeTruthy();
@@ -51,18 +50,18 @@ test.describe('Alert Auto-Remediation — API', () => {
 
     // Step 5: Set status to RESOLVED
     logger.info('Step 5: Setting alert status to RESOLVED');
-    const currentAlert = await getAlertById(api, alertId);
+    const currentAlert = await api.alerts.getById(alertId);
     if (currentAlert.status !== 'RESOLVED') {
-      await updateAlertStatus(api, alertId, 'RESOLVED');
+      await api.alerts.updateStatus(alertId, 'RESOLVED');
     }
 
     // Step 6: Add comment
     logger.info('Step 6: Adding resolution comment');
-    await addAlertComment(api, alertId, 'Remediation verified successfully and issue is resolved');
+    await api.alerts.addComment(alertId, 'Remediation verified successfully and issue is resolved');
 
     // Step 7: Start another scan
     logger.info('Step 7: Starting second scan');
-    const scan2 = await startScan(api);
+    const scan2 = await api.scans.start();
     expect(scan2.id).toBeTruthy();
 
     // Step 8: Wait for second scan to complete
@@ -71,7 +70,7 @@ test.describe('Alert Auto-Remediation — API', () => {
 
     // Step 9: Check for re-created identical alerts
     logger.info('Step 9: Checking for re-created identical alerts');
-    const alertsAfterSecondScan = await getAlerts(api);
+    const alertsAfterSecondScan = await api.alerts.getAll();
     const identicalOpenAlerts = alertsAfterSecondScan.filter(
       (a) =>
         a.policyId === alertPolicyId &&

@@ -1,5 +1,4 @@
-import type { AxiosInstance } from 'axios';
-import { getAlertById, getScanById } from './api';
+import { ApiClient } from './api/ApiClient';
 import { logger } from './logger';
 import type { AlertStatus } from './types';
 
@@ -12,7 +11,7 @@ interface WaitOptions {
  * Polls GET /api/alerts/:id until the alert status matches one of the expected statuses.
  */
 export async function waitForAlertStatus(
-  api: AxiosInstance,
+  api: ApiClient,
   alertId: string,
   expectedStatus: AlertStatus | AlertStatus[],
   options: WaitOptions = {}
@@ -25,7 +24,7 @@ export async function waitForAlertStatus(
 
   const start = Date.now();
   while (Date.now() - start < timeout) {
-    const alert = await getAlertById(api, alertId);
+    const alert = await api.alerts.getById(alertId);
     logger.info(`Alert ${alertId} current status: ${alert.status}`);
 
     if (statuses.includes(alert.status)) {
@@ -43,7 +42,7 @@ export async function waitForAlertStatus(
  * Polls GET /api/scans/:id until the scan status is COMPLETED.
  */
 export async function waitForScanComplete(
-  api: AxiosInstance,
+  api: ApiClient,
   scanId: string,
   options: WaitOptions = {}
 ): Promise<void> {
@@ -54,7 +53,7 @@ export async function waitForScanComplete(
 
   const start = Date.now();
   while (Date.now() - start < timeout) {
-    const scan = await getScanById(api, scanId);
+    const scan = await api.scans.getById(scanId);
     logger.info(`Scan ${scanId} current status: ${scan.status}`);
 
     if (scan.status === 'COMPLETED') {

@@ -1,20 +1,20 @@
 import type { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class AlertsPage {
-  private readonly page: Page;
+export class AlertsPage extends BasePage {
   private readonly alertsTable: Locator;
   private readonly loadingState: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.alertsTable = page.locator('table[aria-label="Alerts list"]');
     this.loadingState = page.locator('text=Loading alerts...');
   }
 
   async goto(): Promise<void> {
-    await this.page.goto('/alerts', { waitUntil: 'networkidle' });
+    await this.navigate('/alerts');
     try {
-      await this.loadingState.waitFor({ state: 'hidden', timeout: 15_000 });
+      await this.waitForHidden(this.loadingState, 15_000);
     } catch {
       // Loading might already be gone
     }

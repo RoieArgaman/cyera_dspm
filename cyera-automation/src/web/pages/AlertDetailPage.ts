@@ -1,7 +1,7 @@
 import type { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
-export class AlertDetailPage {
-  private readonly page: Page;
+export class AlertDetailPage extends BasePage {
   private readonly drawer: Locator;
   private readonly statusSelect: Locator;
   private readonly assigneeSelect: Locator;
@@ -11,7 +11,7 @@ export class AlertDetailPage {
   private readonly postCommentButton: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.drawer = page.locator('[data-testid="alert-details-drawer"]');
     this.statusSelect = page.locator('#alert-status');
     this.assigneeSelect = page.locator('#alert-assignee');
@@ -22,7 +22,7 @@ export class AlertDetailPage {
   }
 
   async waitForDrawer(timeout = 15_000): Promise<void> {
-    await this.drawer.waitFor({ state: 'visible', timeout });
+    await this.waitForVisible(this.drawer, timeout);
   }
 
   async changeStatus(newStatus: string): Promise<void> {

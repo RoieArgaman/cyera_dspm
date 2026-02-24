@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 const API_URL = process.env.API_URL || 'http://localhost:8080';
 const USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const PASSWORD = process.env.ADMIN_PASSWORD || 'Aa123456';
+const PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 const authDir = path.resolve(__dirname, '..', '.auth');
 
