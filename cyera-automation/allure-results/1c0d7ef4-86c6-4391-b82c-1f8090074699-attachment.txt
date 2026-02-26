@@ -1,4 +1,0 @@
-2026-02-25T07:57:50.443Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
-2026-02-25T07:57:50.447Z [info]: API Response: 201 POST /api/scans {"status":201,"method":"POST","url":"/api/scans","bodyPreview":"{\"id\":\"scan_48732564\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T07:57:50.444Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
-2026-02-25T07:57:50.447Z [info]: API Request: GET http://localhost:8080/api/scans/status {"method":"GET","url":"http://localhost:8080/api/scans/status"}
-2026-02-25T07:57:50.450Z [info]: API Response: 200 GET /api/scans/status {"status":200,"method":"GET","url":"/api/scans/status","bodyPreview":"{\"status\":\"RUNNING\",\"scanId\":\"scan_48732564\",\"startedAt\":\"2026-02-25T07:57:50.444Z\",\"lastCompleted\":{\"scanId\":\"scan_aecdb0e5\",\"completedAt\":\"2026-02-25T07:57:48.262Z\",\"alertsCreatedCount\":8}}"}
