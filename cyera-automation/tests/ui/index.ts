@@ -4,9 +4,9 @@ import { logger } from 'logger';
 import type { ApiClient } from '../../src/api/ApiClient';
 import type { Alert } from '../../src/api/types';
 
-/** Check if an alert is for manual remediation (autoRemediate is not true). */
+/** Check if an alert is for manual remediation (autoRemediate is not true in either source). */
 function isManualRemediation(alert: Alert): boolean {
-  return alert.policySnapshot?.autoRemediate !== true;
+  return alert.policySnapshot?.autoRemediate !== true && alert.remediation?.autoRemediate !== true;
 }
 
 /**

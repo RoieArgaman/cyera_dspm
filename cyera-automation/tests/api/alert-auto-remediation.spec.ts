@@ -17,9 +17,9 @@ import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
 import { logger } from 'logger';
 import type { Alert } from '../../src/api/types';
 
-/** Determine whether an alert is configured for auto-remediation via policySnapshot. */
+/** Determine whether an alert is configured for auto-remediation via policySnapshot or remediation. */
 function isAutoRemediate(alert: Alert): boolean {
-  return alert.policySnapshot?.autoRemediate === true;
+  return alert.policySnapshot?.autoRemediate === true || alert.remediation?.autoRemediate === true;
 }
 
 test.describe('Alert Auto-Remediation — API', () => {
