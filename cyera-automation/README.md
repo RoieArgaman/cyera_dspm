@@ -33,6 +33,16 @@ Then open **http://localhost:3000** and log in with **admin** and the password y
 
 **What happens:** The script checks Docker is running, unzips the platform from `platform Assignment.zip` into `platform-home-assignment/`, fixes Docker credential config if needed, runs `docker compose up -d`, and waits for the API to be healthy. Web app: `http://localhost:3000` | API: `http://localhost:8080`.
 
+### Stop the platform
+
+From `cyera-automation/`:
+
+```bash
+npm run stop-platform
+```
+
+This runs `docker compose down` in the `platform-home-assignment/` directory and stops all platform containers.
+
 ### Run tests
 
 With the platform running:
@@ -61,7 +71,7 @@ We use a centralized Winston logger (`src/logger/logger.ts`) plus a Playwright s
 - **Logger**
   - Use `logger.info` / `logger.debug` for normal operations.
   - Use `logger.warn` / `logger.error` for exceptional events and failures.
-  - The logger writes human‑readable logs to stdout (info/debug) and stderr (warn/error), which are visible via `docker compose logs -f`.
+  - The logger writes human‑readable logs to stdout (info/debug) and stderr (warn/error), which are visible via `npm run logs-platform` (which runs `docker compose logs -f` in the platform directory) or directly with `docker compose logs -f`.
   - API clients log all requests, responses, and errors via `BaseApiClient` interceptors.
 
 - **Playwright `@step` decorator**
