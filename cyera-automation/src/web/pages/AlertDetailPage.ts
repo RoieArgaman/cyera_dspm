@@ -31,6 +31,7 @@ export class AlertDetailPage extends BasePage {
     return this.statusSelect;
   }
 
+  @step('Wait for alert details drawer')
   async waitForDrawer(timeout = 15_000): Promise<void> {
     await this.waitForVisible(this.drawer, timeout);
   }
@@ -42,12 +43,14 @@ export class AlertDetailPage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
+  @step('Change alert assignee')
   async changeAssignee(assigneeName: string): Promise<void> {
     await this.assigneeSelect.click();
     await this.page.locator('[role="option"]').filter({ hasText: assigneeName }).click();
     await this.page.waitForTimeout(1000);
   }
 
+  @step('Expand section in alert details drawer')
   async expandSection(sectionTitle: string): Promise<void> {
     const sectionButton = this.drawer.locator('button').filter({ hasText: sectionTitle });
     const isExpanded = await sectionButton.getAttribute('aria-expanded');
@@ -74,10 +77,12 @@ export class AlertDetailPage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
+  @step('Get current alert status from drawer')
   async getCurrentStatus(): Promise<string> {
     return (await this.statusSelect.textContent())?.trim() ?? '';
   }
 
+  @step('Close alert details drawer')
   async closeDrawer(): Promise<void> {
     const closeButton = this.drawer.locator('[aria-label="Close"]').first();
     if (await closeButton.isVisible()) {

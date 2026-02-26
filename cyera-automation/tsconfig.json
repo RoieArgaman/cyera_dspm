@@ -11,7 +11,10 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": ".",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "logger": ["src/logger/logger.ts"]
+    }
   },
   "include": [
     "src/**/*.ts",

@@ -203,27 +203,38 @@ Key points:
 
 ## Logging and Playwright steps
 
-For UI flows we combine **structured logging** with **Playwright steps**:
+For UI and API flows we combine **structured logging** and **Playwright steps**:
 
 - **Logger**
-  - Use the shared Winston logger from `src/logger.ts` instead of `console.log` / `console.warn`.
+  - Use the shared Winston logger from `src/logger/logger.ts` instead of `console.log` / `console.warn`.
   - Log normal operations with `logger.info` / `logger.debug` (navigation, expected user actions, polling progress).
   - Log exceptional events with `logger.warn` / `logger.error` (unexpected states, failures, thrown errors).
-  - Logs go to stdout/stderr and are visible in `docker compose logs -f`.
+  - Logs go to stdout/stderr and are written to `logs/run.log`, which you can also view via `docker compose logs -f` when running the platform.
 
 - **`@step` decorator for Page Objects**
-  - High-level Page Object methods that represent a user flow should use `@step('Description')` from `src/test/stepDecorator`.
+  - **All async Page Object methods that represent a user flow or helper** (navigation, interactions, waits) should use `@step('Description')` from `src/decorators/stepDecorator.ts`.
   - The decorator:
     - Logs an `info` entry with the step message and arguments.
     - Wraps the method body in `test.step(...)` so it appears as a named step in Playwright reports and traces.
     - Logs an `error` entry if the method throws, then rethrows so the test still fails.
   - Examples:
-    - `LoginPage.login`, `LoginPage.goto`
-    - `AlertsPage.goto`, `AlertsPage.clickFirstAlertByStatusAndAutoRemediate`
-    - `AlertDetailPage.changeStatus`, `AlertDetailPage.remediate`, `AlertDetailPage.addComment`
+    - `LoginPage.login`, `LoginPage.goto`, `LoginPage.isDisplayed`, `LoginPage.getErrorMessage`
+    - `AlertsPage.goto`, `AlertsPage.getAlertCount`, `AlertsPage.waitForAlerts`, `AlertsPage.clickFirstAlertByStatusAndAutoRemediate`
+    - `AlertDetailPage.waitForDrawer`, `AlertDetailPage.changeStatus`, `AlertDetailPage.remediate`, `AlertDetailPage.addComment`, `AlertDetailPage.closeDrawer`
+
+- **API clients and Playwright steps**
+  - All API traffic should go through `src/api/clients/BaseApiClient.ts`, which exposes a helper:
+    - `protected async requestWithStep<T>(method: Method, url: string, config?: AxiosRequestConfig, stepDescription?: string)`
+  - Every public method on concrete API clients (`AlertsClient`, `AdminClient`, `ScansClient`, `PolicyClient`) **must** call `requestWithStep` with a descriptive `stepDescription` so that API calls show up as clear steps in reports.
+  - Examples:
+    - `AlertsClient.getAll` → `requestWithStep('GET', '/api/alerts', { params }, 'List alerts with optional filters')`
+    - `AdminClient.resetData` → `requestWithStep('POST', '/api/admin/reset', undefined, 'Reset test environment data')`
+    - `ScansClient.start` → `requestWithStep('POST', '/api/scans', undefined, 'Start scan')`
+    - `PolicyClient.getConfig` → `requestWithStep('GET', '/api/policy-config', undefined, 'Get policy configuration')`
+  - Avoid wrapping API methods themselves in `@step`; rely on the single `requestWithStep` step per HTTP request to keep traces readable.
 
 - **Rules**
-  - Page Objects and tests **must not** use `console.*`; always rely on `logger` or the `@step` decorator.
+  - Page Objects and tests **must not** use `console.*`; always rely on `logger`, the `@step` decorator, or `requestWithStep` for visibility.
   - Avoid logging secrets or sensitive data (tokens, credentials, full payloads); prefer IDs, counts, and statuses.
   - Tests should stay focused on behavior/assertions; logging is there to aid debugging and observability.
 

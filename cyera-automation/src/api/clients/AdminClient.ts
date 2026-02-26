@@ -9,6 +9,8 @@ export class AdminClient extends BaseApiClient {
     const res = await this.requestWithStep<{ success: boolean; message: string }>(
       'POST',
       '/api/admin/reset',
+      undefined,
+      'Reset test environment data',
     );
     return res.data;
   }
@@ -17,6 +19,8 @@ export class AdminClient extends BaseApiClient {
     const res = await this.requestWithStep<{ status: string; timestamp: string; service: string }>(
       'GET',
       '/api/health',
+      undefined,
+      'Check API health',
     );
     return res.data;
   }

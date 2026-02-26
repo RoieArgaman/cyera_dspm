@@ -44,5 +44,4 @@ async function resetDataIfSingleWorkerSingleShard(
     await api.admin.resetData();
   }
 }
-
 export { expect };

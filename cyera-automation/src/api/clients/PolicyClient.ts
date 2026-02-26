@@ -7,7 +7,12 @@ export class PolicyClient extends BaseApiClient {
   }
 
   async getConfig(): Promise<PolicyConfig> {
-    const res = await this.requestWithStep<PolicyConfig>('GET', '/api/policy-config');
+    const res = await this.requestWithStep<PolicyConfig>(
+      'GET',
+      '/api/policy-config',
+      undefined,
+      'Get policy configuration',
+    );
     return res.data;
   }
 }

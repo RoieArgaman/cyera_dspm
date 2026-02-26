@@ -1,6 +1,6 @@
 import { test as base, expect } from '../../fixtures';
 import { waitForScanComplete } from '../../src/wait';
-import { logger } from '../../src/logger';
+import { logger } from 'logger';
 import type { ApiClient } from '../../src/api/ApiClient';
 import type { Alert } from '../../src/types';
 

@@ -1,5 +1,5 @@
 import { ApiClient } from './api/ApiClient';
-import { logger } from './logger';
+import { logger } from 'logger';
 import type { AlertStatus } from './types';
 
 interface WaitOptions {

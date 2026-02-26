@@ -31,6 +31,7 @@ export class AlertsPage extends BasePage {
     return this.alertRows;
   }
 
+  @step('Get number of alerts in table')
   async getAlertCount(): Promise<number> {
     return this.alertRows.count();
   }

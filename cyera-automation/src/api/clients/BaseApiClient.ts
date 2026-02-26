@@ -6,7 +6,7 @@ import axios, {
   Method,
 } from 'axios';
 import { test } from '@playwright/test';
-import { logger } from '../../logger';
+import { logger } from 'logger';
 
 export class BaseApiClient {
   protected readonly http: AxiosInstance;
@@ -92,6 +92,7 @@ export class BaseApiClient {
     method: Method,
     url: string,
     config?: AxiosRequestConfig,
+    stepDescription?: string,
   ): Promise<AxiosResponse<T>> {
     const upperMethod = method.toUpperCase() as Method;
     const stepNameBase = `API ${upperMethod} ${url}`;
@@ -108,7 +109,8 @@ export class BaseApiClient {
     }
 
     const stepName =
-      payloadFragment != null ? `${stepNameBase} ${payloadFragment}` : stepNameBase;
+      stepDescription ??
+      (payloadFragment != null ? `${stepNameBase} ${payloadFragment}` : stepNameBase);
 
     return await test.step(stepName, async () => {
       return this.http.request<T>({

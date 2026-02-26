@@ -14,7 +14,7 @@
  */
 import { test, expect } from '../../fixtures';
 import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
-import { logger } from '../../src/logger';
+import { logger } from 'logger';
 import type { Alert } from '../../src/types';
 
 /** Determine whether an alert is configured for auto-remediation. */

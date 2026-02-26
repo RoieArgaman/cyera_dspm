@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import { ApiClient } from '../src/api/ApiClient';
-import { logger } from '../src/logger';
+import { logger } from 'logger';
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
