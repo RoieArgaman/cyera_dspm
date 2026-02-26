@@ -2,7 +2,7 @@ import { test, expect } from './index';
 
 test.describe('Alert Manual Remediation — UI', () => {
   test('should manually remediate an alert through the full workflow', async ({ app, api, scan }) => {
-    // Step 1: scan fixture already ran (started scan, waited for completion, ensured one OPEN alert with autoRemediate false)
+    // Step 1: scan fixture already ran (started scan, waited for completion, ensured one OPEN alert with autoRemediate false)fi
     // Step 2: Navigate to alerts list
     await app.alerts.goto();
 

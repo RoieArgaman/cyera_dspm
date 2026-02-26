@@ -1,4 +1,4 @@
-import { test as setup, expect } from '../fixtures';
+import { test as setup, expect } from '@playwright/test';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
