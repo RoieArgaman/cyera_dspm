@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { step } from '../../decorators/stepDecorator';
+import { step } from 'decorators/stepDecorator';
 
 export class AlertsPage extends BasePage {
   readonly alertsPageRoot: Locator;

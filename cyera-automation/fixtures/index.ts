@@ -36,7 +36,7 @@ async function resetDataIfSingleWorkerSingleShard(
 ): Promise<void> {
   const { workers, shard } = testInfo.config;
 
-  const workersCount = typeof workers === 'number' ? workers : undefined;
+  const workersCount = Number(workers);
   const singleWorker = workersCount === 1;
   const singleShard = !shard || shard.total === 1;
 

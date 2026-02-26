@@ -223,15 +223,21 @@ For UI and API flows we combine **structured logging** and **Playwright steps**:
     - `AlertDetailPage.waitForDrawer`, `AlertDetailPage.changeStatus`, `AlertDetailPage.remediate`, `AlertDetailPage.addComment`, `AlertDetailPage.closeDrawer`
 
 - **API clients and Playwright steps**
-  - All API traffic should go through `src/api/clients/BaseApiClient.ts`, which exposes a helper:
-    - `protected async requestWithStep<T>(method: Method, url: string, config?: AxiosRequestConfig, stepDescription?: string)`
-  - Every public method on concrete API clients (`AlertsClient`, `AdminClient`, `ScansClient`, `PolicyClient`) **must** call `requestWithStep` with a descriptive `stepDescription` so that API calls show up as clear steps in reports.
+  - All API traffic should go through `src/api/clients/BaseApiClient.ts`, which configures a shared Axios instance and logging.
+  - `BaseApiClient` exposes **per-method helpers**:
+    - `protected async get<T>(url: string, config?: AxiosRequestConfig)`
+    - `protected async post<T>(url: string, config?: AxiosRequestConfig)`
+    - `protected async put<T>(url: string, config?: AxiosRequestConfig)`
+    - `protected async patch<T>(url: string, config?: AxiosRequestConfig)`
+    - `protected async delete<T>(url: string, config?: AxiosRequestConfig)`
+  - Every public method on concrete API clients (`AlertsClient`, `AdminClient`, `ScansClient`, `PolicyClient`) **must**:
+    - Be decorated with `@step('Description')` from `src/decorators/stepDecorator.ts`.
+    - Call the appropriate helper (`get`, `post`, `patch`, etc.) and return `response.data`.
   - Examples:
-    - `AlertsClient.getAll` → `requestWithStep('GET', '/api/alerts', { params }, 'List alerts with optional filters')`
-    - `AdminClient.resetData` → `requestWithStep('POST', '/api/admin/reset', undefined, 'Reset test environment data')`
-    - `ScansClient.start` → `requestWithStep('POST', '/api/scans', undefined, 'Start scan')`
-    - `PolicyClient.getConfig` → `requestWithStep('GET', '/api/policy-config', undefined, 'Get policy configuration')`
-  - Avoid wrapping API methods themselves in `@step`; rely on the single `requestWithStep` step per HTTP request to keep traces readable.
+    - `AlertsClient.getAll` → `@step('List alerts with optional filters')` + `this.get('/api/alerts', { params })`
+    - `AdminClient.resetData` → `@step('Reset test environment data')` + `this.post('/api/admin/reset')`
+    - `ScansClient.start` → `@step('Start scan')` + `this.post('/api/scans')`
+    - `PolicyClient.getConfig` → `@step('Get policy configuration')` + `this.get('/api/policy-config')`
 
 - **Rules**
   - Page Objects and tests **must not** use `console.*`; always rely on `logger`, the `@step` decorator, or `requestWithStep` for visibility.

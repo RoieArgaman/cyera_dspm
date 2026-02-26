@@ -3,9 +3,7 @@ import axios, {
   AxiosResponse,
   AxiosError,
   AxiosRequestConfig,
-  Method,
 } from 'axios';
-import { test } from '@playwright/test';
 import { logger } from 'logger';
 
 export class BaseApiClient {
@@ -88,36 +86,58 @@ export class BaseApiClient {
     }
   }
 
-  protected async requestWithStep<T = unknown>(
-    method: Method,
+  protected async get<T = unknown>(
     url: string,
     config?: AxiosRequestConfig,
-    stepDescription?: string,
   ): Promise<AxiosResponse<T>> {
-    const upperMethod = method.toUpperCase() as Method;
-    const stepNameBase = `API ${upperMethod} ${url}`;
+    return this.http.request<T>({
+      method: 'GET',
+      url,
+      ...config,
+    });
+  }
 
-    let payloadFragment: string | undefined;
-    if (config?.params || config?.data) {
-      payloadFragment = this.safeJsonPreview(
-        {
-          params: config.params ?? undefined,
-          body: config.data ?? undefined,
-        },
-        300,
-      );
-    }
+  protected async post<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    return this.http.request<T>({
+      method: 'POST',
+      url,
+      ...config,
+    });
+  }
 
-    const stepName =
-      stepDescription ??
-      (payloadFragment != null ? `${stepNameBase} ${payloadFragment}` : stepNameBase);
+  protected async put<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    return this.http.request<T>({
+      method: 'PUT',
+      url,
+      ...config,
+    });
+  }
 
-    return await test.step(stepName, async () => {
-      return this.http.request<T>({
-        method: upperMethod,
-        url,
-        ...config,
-      });
+  protected async patch<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    return this.http.request<T>({
+      method: 'PATCH',
+      url,
+      ...config,
+    });
+  }
+
+  protected async delete<T = unknown>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    return this.http.request<T>({
+      method: 'DELETE',
+      url,
+      ...config,
     });
   }
 }

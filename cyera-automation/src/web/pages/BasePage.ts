@@ -1,5 +1,5 @@
 import { Page, Locator } from '@playwright/test';
-import { step } from '../../decorators/stepDecorator';
+import { step } from 'decorators/stepDecorator';
 
 export class BasePage {
   protected readonly page: Page;
