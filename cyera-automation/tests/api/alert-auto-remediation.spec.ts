@@ -1,17 +1,35 @@
 /**
  * Alert Auto-Remediation API Test
  *
- * IMPORTANT: This test is EXPECTED TO FAIL by design.
+ * IMPORTANT: This test is EXPECTED TO FAIL by design (at the final assertion).
  *
  * The final assertion checks that after a second scan, no identical alert
  * (same policy, same asset) is re-created with status OPEN. In the current
  * system, the scanning engine will re-detect the same violation and create
  * a new OPEN alert even after the previous one was resolved. This is a known
  * limitation / intentional behavior of the mock platform.
+ *
+ * If the platform does not return any alert with autoRemediate: true after
+ * a scan, the test is skipped (precondition not met).
  */
 import { test, expect } from '../../fixtures';
 import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
 import { logger } from '../../src/logger';
+import type { Alert } from '../../src/types';
+
+/** Determine whether an alert is configured for auto-remediation. */
+function isAutoRemediate(alert: Alert | Record<string, unknown>): boolean {
+  const a = alert as Alert;
+  const r = alert as Record<string, unknown>;
+
+  // Direct flag on the alert (camelCase or snake_case)
+  const direct = (r.autoRemediate ?? r.auto_remediate) as boolean | undefined;
+
+  // Snapshot from the policy attached to the alert
+  const snapshot = a.policySnapshot?.autoRemediate;
+
+  return direct === true || snapshot === true;
+}
 
 test.describe('Alert Auto-Remediation — API', () => {
   test('auto-remediation lifecycle with re-scan verification (expected to FAIL)', async ({ api }) => {
@@ -32,14 +50,13 @@ test.describe('Alert Auto-Remediation — API', () => {
 
     const autoRemAlert = allAlerts.find(
       (a) =>
-        (a.status === 'OPEN' || a.status === 'REMEDIATION_IN_PROGRESS') &&
-        a.autoRemediate === true
+        (a.status === 'OPEN' || a.status === 'REMEDIATION_IN_PROGRESS') && isAutoRemediate(a),
     );
 
     expect(autoRemAlert, 'Expected to find an auto-remediate alert').toBeTruthy();
-    const alertId = autoRemAlert!.id;
-    const alertPolicyId = autoRemAlert!.policyId;
-    const alertAssetLocation = autoRemAlert!.assetLocation;
+    const alertId = autoRemAlert.id;
+    const alertPolicyId = autoRemAlert.policyId;
+    const alertAssetLocation = autoRemAlert.assetLocation;
     logger.info(`Found auto-remediate alert: ${alertId} (policy: ${alertPolicyId}, asset: ${alertAssetLocation})`);
 
     // Step 4: Wait for auto-remediation to complete

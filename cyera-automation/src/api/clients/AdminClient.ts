@@ -6,12 +6,18 @@ export class AdminClient extends BaseApiClient {
   }
 
   async resetData(): Promise<{ success: boolean; message: string }> {
-    const res = await this.http.post<{ success: boolean; message: string }>('/api/admin/reset');
+    const res = await this.requestWithStep<{ success: boolean; message: string }>(
+      'POST',
+      '/api/admin/reset',
+    );
     return res.data;
   }
 
   async health(): Promise<{ status: string; timestamp: string; service: string }> {
-    const res = await this.http.get<{ status: string; timestamp: string; service: string }>('/api/health');
+    const res = await this.requestWithStep<{ status: string; timestamp: string; service: string }>(
+      'GET',
+      '/api/health',
+    );
     return res.data;
   }
 }

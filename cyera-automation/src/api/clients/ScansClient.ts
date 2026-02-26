@@ -7,17 +7,17 @@ export class ScansClient extends BaseApiClient {
   }
 
   async start(): Promise<Scan> {
-    const res = await this.http.post<Scan>('/api/scans');
+    const res = await this.requestWithStep<Scan>('POST', '/api/scans');
     return res.data;
   }
 
   async getById(id: string): Promise<Scan> {
-    const res = await this.http.get<Scan>(`/api/scans/${id}`);
+    const res = await this.requestWithStep<Scan>('GET', `/api/scans/${id}`);
     return res.data;
   }
 
   async getStatus(): Promise<ScanStatusResponse> {
-    const res = await this.http.get<ScanStatusResponse>('/api/scans/status');
+    const res = await this.requestWithStep<ScanStatusResponse>('GET', '/api/scans/status');
     return res.data;
   }
 }

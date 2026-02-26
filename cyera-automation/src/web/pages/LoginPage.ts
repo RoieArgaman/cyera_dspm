@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { step } from '../../test/stepDecorator';
+import { step } from '../../decorators/stepDecorator';
 
 export class LoginPage extends BasePage {
   constructor(page: Page) {

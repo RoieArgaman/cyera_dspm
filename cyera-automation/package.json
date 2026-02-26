@@ -8,6 +8,9 @@
     "test:ui": "npx playwright test --project=ui",
     "test:api": "npx playwright test --project=api",
     "report": "npx playwright show-report",
+    "allure:open": "npx allure open allure-results",
+    "allure:serve": "npx allure serve allure-results",
+    "test:allure": "npx playwright test && npm run allure:open",
     "typecheck": "tsc --noEmit",
     "start-platform": "cd .. && unzip -o cyera-automation/\"platform Assignment.zip\" && cd platform-home-assignment && docker compose up -d",
     "e2e": "npm run start-platform && npx playwright test"
@@ -15,6 +18,8 @@
   "devDependencies": {
     "@playwright/test": "^1.42.0",
     "@types/node": "^25.3.0",
+    "allure-commandline": "^2.36.0",
+    "allure-playwright": "^3.4.5",
     "typescript": "^5.4.0"
   },
   "dependencies": {

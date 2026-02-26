@@ -1,4 +1,11 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import axios, {
+  AxiosInstance,
+  AxiosResponse,
+  AxiosError,
+  AxiosRequestConfig,
+  Method,
+} from 'axios';
+import { test } from '@playwright/test';
 import { logger } from '../../logger';
 
 export class BaseApiClient {
@@ -14,42 +21,101 @@ export class BaseApiClient {
       timeout: 30_000,
     });
 
-    // Request interceptor — log every outgoing request
+    // Request interceptor — log every outgoing request with payload preview
     this.http.interceptors.request.use((config) => {
-      logger.info(`API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`, {
-        method: config.method?.toUpperCase(),
-        url: `${config.baseURL}${config.url}`,
-        data: config.data ?? undefined,
-        params: config.params ?? undefined,
+      const { method, baseURL, url, data, params } = config;
+
+      logger.info(`API Request: ${method?.toUpperCase()} ${baseURL}${url}`, {
+        method: method?.toUpperCase(),
+        url: `${baseURL}${url}`,
+        data,
+        params,
       });
+
       return config;
     });
 
-    // Response interceptor — log every response
+    // Response interceptor — log every response with a safe body preview
     this.http.interceptors.response.use(
       (response: AxiosResponse) => {
-        logger.info(`API Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`, {
-          status: response.status,
-          method: response.config.method?.toUpperCase(),
-          url: response.config.url,
+        const { status, data } = response;
+        const method = response.config.method?.toUpperCase();
+        const url = response.config.url;
+        const fullUrl = `${response.config.baseURL ?? ''}${url ?? ''}`;
+
+        logger.info(`API Response: ${status} ${method} ${fullUrl}`, {
+          status,
+          method,
+          url: fullUrl,
+          bodyPreview: this.safeJsonPreview(data),
         });
+
         return response;
       },
       (error: AxiosError) => {
         const status = error.response?.status ?? 'NETWORK_ERROR';
         const method = error.config?.method?.toUpperCase() ?? 'UNKNOWN';
         const url = error.config?.url ?? 'UNKNOWN';
+        const baseURL = error.config?.baseURL ?? '';
+        const fullUrl = `${baseURL}${url}`;
         const responseData = error.response?.data;
 
-        logger.error(`API Error: ${status} ${method} ${url}`, {
+        logger.error(`API Error: ${status} ${method} ${fullUrl}`, {
           status,
           method,
-          url,
-          responseData,
+          url: fullUrl,
+          bodyPreview: this.safeJsonPreview(responseData),
         });
 
         return Promise.reject(error);
-      }
+      },
     );
+  }
+
+  private safeJsonPreview(value: unknown, maxLength = 500): string | undefined {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+
+    try {
+      const str = JSON.stringify(value);
+      if (str.length <= maxLength) {
+        return str;
+      }
+      return `${str.slice(0, maxLength)}…`;
+    } catch {
+      return '[unserializable]';
+    }
+  }
+
+  protected async requestWithStep<T = unknown>(
+    method: Method,
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    const upperMethod = method.toUpperCase() as Method;
+    const stepNameBase = `API ${upperMethod} ${url}`;
+
+    let payloadFragment: string | undefined;
+    if (config?.params || config?.data) {
+      payloadFragment = this.safeJsonPreview(
+        {
+          params: config.params ?? undefined,
+          body: config.data ?? undefined,
+        },
+        300,
+      );
+    }
+
+    const stepName =
+      payloadFragment != null ? `${stepNameBase} ${payloadFragment}` : stepNameBase;
+
+    return await test.step(stepName, async () => {
+      return this.http.request<T>({
+        method: upperMethod,
+        url,
+        ...config,
+      });
+    });
   }
 }

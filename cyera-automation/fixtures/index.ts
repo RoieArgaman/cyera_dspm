@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect, type TestInfo } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -25,5 +25,24 @@ export const test = base.extend<{
     await use(new ApiClient(API_URL, tokenData.token));
   },
 });
+
+test.beforeEach(async ({ api }, testInfo) => {
+  await resetDataIfSingleWorkerSingleShard(api, testInfo);
+});
+
+async function resetDataIfSingleWorkerSingleShard(
+  api: ApiClient,
+  testInfo: TestInfo,
+): Promise<void> {
+  const { workers, shard } = testInfo.config;
+
+  const workersCount = typeof workers === 'number' ? workers : undefined;
+  const singleWorker = workersCount === 1;
+  const singleShard = !shard || shard.total === 1;
+
+  if (singleWorker && singleShard) {
+    await api.admin.resetData();
+  }
+}
 
 export { expect };

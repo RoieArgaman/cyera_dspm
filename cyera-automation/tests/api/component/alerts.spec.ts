@@ -1,4 +1,4 @@
-import { test, expect } from '../../../fixtures';
+import { test, expect } from '../index';
 import type { Alert, AlertStatus } from '../../../src/types';
 
 test.describe('Alerts API — Component Tests', () => {
@@ -16,11 +16,13 @@ test.describe('Alerts API — Component Tests', () => {
     }
   });
 
-  test('GET alert by ID returns correct alert', async ({ api }) => {
-    const alerts = await api.alerts.getAll();
-    expect(alerts.length, 'There should be at least one alert to test GET by ID').toBeGreaterThan(0);
+  test('GET alert by ID returns correct alert', async ({ api, alertsAfterScan }) => {
+    expect(
+      alertsAfterScan.length,
+      'Scan should produce at least one alert to test GET by ID',
+    ).toBeGreaterThan(0);
 
-    const targetId = alerts[0].id;
+    const targetId = alertsAfterScan[0].id;
     const alert = await api.alerts.getById(targetId);
 
     expect(alert, 'GET alert by ID should return an alert').toBeTruthy();
@@ -30,9 +32,13 @@ test.describe('Alerts API — Component Tests', () => {
     expect(alert.comments, 'Returned alert should have a comments field').toBeDefined();
   });
 
-  test('PATCH alert status follows valid transitions only', async ({ api }) => {
-    const alerts = await api.alerts.getAll();
-    const openAlert = alerts.find((a: Alert) => a.status === 'OPEN');
+  test('PATCH alert status follows valid transitions only', async ({ api, alertsAfterScan }) => {
+    expect(
+      alertsAfterScan.length,
+      'Scan should produce at least one alert for transition testing',
+    ).toBeGreaterThan(0);
+
+    const openAlert = alertsAfterScan.find((a: Alert) => a.status === 'OPEN');
     expect(openAlert, 'Need an OPEN alert for transition testing').toBeTruthy();
 
     const alertId = openAlert!.id;
@@ -62,11 +68,13 @@ test.describe('Alerts API — Component Tests', () => {
     expect(reopened.status, 'Status should update from RESOLVED back to REOPEN for cleanup').toBe('REOPEN');
   });
 
-  test('POST comment to alert succeeds', async ({ api }) => {
-    const alerts = await api.alerts.getAll();
-    expect(alerts.length, 'There should be at least one alert to add a comment to').toBeGreaterThan(0);
+  test('POST comment to alert succeeds', async ({ api, alertsAfterScan }) => {
+    expect(
+      alertsAfterScan.length,
+      'Scan should produce at least one alert to add a comment to',
+    ).toBeGreaterThan(0);
 
-    const alertId = alerts[0].id;
+    const alertId = alertsAfterScan[0].id;
     const commentMessage = `Test comment at ${new Date().toISOString()}`;
 
     const comment = await api.alerts.addComment(alertId, commentMessage);
