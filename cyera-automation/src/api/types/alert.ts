@@ -8,6 +8,20 @@ export type AlertStatus =
 
 export type Severity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
+export interface AlertRemediation {
+  type: string;
+  priority: string;
+  autoRemediate: boolean;
+  note?: string;
+}
+
+export interface PolicySnapshot {
+  violationType: string;
+  autoRemediate: boolean;
+  remediationType: string | null;
+  remediationPriority: string | null;
+}
+
 export interface Alert {
   id: string;
   runId: string;
@@ -15,13 +29,13 @@ export interface Alert {
   policyName: string;
   severity: Severity;
   status: AlertStatus;
-  autoRemediate: boolean;
   assetDisplayName: string;
   assetLocation: string;
   description: string;
   comments: AlertComment[];
   assignedTo?: { id: string; name: string } | null;
-  policySnapshot?: { autoRemediate: boolean };
+  remediation?: AlertRemediation;
+  policySnapshot?: PolicySnapshot;
   validTransitions?: AlertStatus[];
   canRemediate?: boolean;
   createdAt: string;

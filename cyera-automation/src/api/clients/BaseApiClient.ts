@@ -4,10 +4,7 @@ import axios, {
   AxiosError,
   AxiosRequestConfig,
 } from 'axios';
-import {
-  step as allureStep,
-  attachment as allureAttachment,
-} from 'allure-js-commons';
+import { test } from '@playwright/test';
 import { logger } from 'logger';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -142,27 +139,28 @@ export class BaseApiClient {
   ): Promise<void> {
     const { headers = {}, data = null, params = null } = config;
 
-    await allureStep(`Making ${method} request to ${url}`, async () => {
+    await test.step(`${method} ${url}`, async () => {
       const requestHeaders = this.prettifyHeaders(
         headers as Record<string, unknown>,
       );
 
-      await allureAttachment('Request Headers', requestHeaders, 'text/plain');
+      await test.info().attach('Request Headers', {
+        body: requestHeaders,
+        contentType: 'text/plain',
+      });
 
       if (params) {
-        await allureAttachment(
-          'Query Parameters',
-          JSON.stringify(params, null, 2),
-          'text/plain',
-        );
+        await test.info().attach('Query Parameters', {
+          body: JSON.stringify(params, null, 2),
+          contentType: 'text/plain',
+        });
       }
 
       if (data !== null && data !== undefined) {
-        await allureAttachment(
-          'Request Body',
-          this.prettifyData(data),
-          'application/json',
-        );
+        await test.info().attach('Request Body', {
+          body: this.prettifyData(data),
+          contentType: 'application/json',
+        });
       }
     });
   }
@@ -171,24 +169,22 @@ export class BaseApiClient {
     url: string,
     response: AxiosResponse,
   ): Promise<void> {
-    await allureStep(
-      `Received response from ${url} (${response.status})`,
+    await test.step(
+      `Response ${response.status} from ${url}`,
       async () => {
         const responseHeaders = this.prettifyHeaders(
           response.headers as Record<string, unknown>,
         );
 
-        await allureAttachment(
-          'Response Headers',
-          responseHeaders,
-          'text/plain',
-        );
+        await test.info().attach('Response Headers', {
+          body: responseHeaders,
+          contentType: 'text/plain',
+        });
 
-        await allureAttachment(
-          'Response Body',
-          this.prettifyData(response.data),
-          'application/json',
-        );
+        await test.info().attach('Response Body', {
+          body: this.prettifyData(response.data),
+          contentType: 'application/json',
+        });
       },
     );
   }

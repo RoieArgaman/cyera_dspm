@@ -2,13 +2,11 @@ import { test as base, expect } from '../../fixtures';
 import { waitForScanComplete } from '../../src/wait';
 import { logger } from 'logger';
 import type { ApiClient } from '../../src/api/ApiClient';
+import type { Alert } from '../../src/api/types';
 
-/** API may omit autoRemediate or use snake_case; treat as manual when not explicitly true. */
-function isManualRemediation(
-  alert: { autoRemediate?: boolean } & Record<string, unknown>,
-): boolean {
-  const ar = alert.autoRemediate ?? (alert as Record<string, unknown>).auto_remediate;
-  return ar !== true;
+/** Check if an alert is for manual remediation (autoRemediate is not true). */
+function isManualRemediation(alert: Alert): boolean {
+  return alert.policySnapshot?.autoRemediate !== true;
 }
 
 /**
@@ -24,24 +22,18 @@ async function ensureOpenManualRemediationAlert(api: ApiClient): Promise<void> {
 
   const alerts = await api.alerts.getAll();
   logger.info('Fixture: fetched alerts', { count: alerts.length });
-  const candidate = alerts.find((a) =>
-    isManualRemediation(a as unknown as Record<string, unknown>),
+
+  // Find an OPEN alert with autoRemediate false (manual remediation candidate)
+  const candidate = alerts.find(
+    (a) => a.status === 'OPEN' && isManualRemediation(a),
   );
   if (!candidate) {
-    logger.error('Fixture: no alert with autoRemediate false (or unset) found');
+    logger.error('Fixture: no OPEN alert with autoRemediate false found');
     throw new Error(
-      'At least one alert suitable for manual remediation is required (autoRemediate false or unset)'
+      'At least one OPEN alert suitable for manual remediation is required (autoRemediate false or unset)'
     );
   }
   logger.info('Fixture: found candidate alert', { alertId: candidate.id, status: candidate.status });
-
-  if (candidate.status !== 'OPEN') {
-    logger.info('Fixture: setting alert status to OPEN', { alertId: candidate.id });
-    await api.alerts.updateStatus(candidate.id, 'OPEN');
-    logger.info('Fixture: alert status set to OPEN');
-  } else {
-    logger.info('Fixture: candidate already OPEN, skipping update');
-  }
 }
 
 export const test = base.extend<{

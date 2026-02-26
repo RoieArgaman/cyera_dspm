@@ -9,26 +9,17 @@
  * a new OPEN alert even after the previous one was resolved. This is a known
  * limitation / intentional behavior of the mock platform.
  *
- * If the platform does not return any alert with autoRemediate: true after
- * a scan, the test is skipped (precondition not met).
+ * Cleanup: The test resets data at the end (via admin/reset) to return the
+ * system to the original state, as required by the assignment.
  */
 import { test, expect } from '../../fixtures';
 import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
 import { logger } from 'logger';
 import type { Alert } from '../../src/api/types';
 
-/** Determine whether an alert is configured for auto-remediation. */
-function isAutoRemediate(alert: Alert | Record<string, unknown>): boolean {
-  const a = alert as Alert;
-  const r = alert as Record<string, unknown>;
-
-  // Direct flag on the alert (camelCase or snake_case)
-  const direct = (r.autoRemediate ?? r.auto_remediate) as boolean | undefined;
-
-  // Snapshot from the policy attached to the alert
-  const snapshot = a.policySnapshot?.autoRemediate;
-
-  return direct === true || snapshot === true;
+/** Determine whether an alert is configured for auto-remediation via policySnapshot. */
+function isAutoRemediate(alert: Alert): boolean {
+  return alert.policySnapshot?.autoRemediate === true;
 }
 
 test.describe('Alert Auto-Remediation — API', () => {
@@ -111,5 +102,12 @@ test.describe('Alert Auto-Remediation — API', () => {
       identicalOpenAlerts,
       'Expected no identical OPEN alerts after second scan (expected to fail by design)'
     ).toHaveLength(0);
+  });
+
+  // Cleanup: Reset data to return the system to the original state
+  test.afterEach(async ({ api }) => {
+    logger.info('Cleanup: resetting environment data after auto-remediation test');
+    await api.admin.resetData();
+    logger.info('Cleanup: environment reset completed');
   });
 });

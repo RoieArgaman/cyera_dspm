@@ -7,15 +7,28 @@ import type {
   CreateAlertPayload,
 } from '../types';
 
+export interface AlertFilters {
+  status?: string;
+  severity?: string;
+  policyId?: string;
+  runId?: string;
+}
+
 export class AlertsClient extends BaseApiClient {
   constructor(baseUrl: string, token: string) {
     super(baseUrl, token);
   }
 
   @step('List alerts with optional filters')
-  async getAll(filters?: { status?: string }): Promise<Alert[]> {
-    const params = filters?.status ? { status: filters.status } : undefined;
-    const res = await this.get<Alert[]>('/api/alerts', { params });
+  async getAll(filters?: AlertFilters): Promise<Alert[]> {
+    const params: Record<string, string> = {};
+    if (filters?.status) params.status = filters.status;
+    if (filters?.severity) params.severity = filters.severity;
+    if (filters?.policyId) params.policyId = filters.policyId;
+    if (filters?.runId) params.runId = filters.runId;
+    const res = await this.get<Alert[]>('/api/alerts', {
+      params: Object.keys(params).length > 0 ? params : undefined,
+    });
     return res.data;
   }
 
