@@ -1,0 +1,29 @@
+2026-02-25T18:56:08.292Z [info]: API Request: POST http://localhost:8080/api/admin/reset {"method":"POST","url":"http://localhost:8080/api/admin/reset"}
+2026-02-25T18:56:08.298Z [info]: API Response: 200 POST http://localhost:8080/api/admin/reset {"status":200,"method":"POST","url":"http://localhost:8080/api/admin/reset","bodyPreview":"{\"success\":true,\"message\":\"Environment reset completed. Your workspace has been restored to its default state.\"}"}
+2026-02-25T18:56:08.299Z [info]: API fixture: starting scan to seed alerts
+2026-02-25T18:56:08.300Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T18:56:08.302Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_7d9824ed\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:56:08.300Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:56:08.303Z [info]: API fixture: scan started {"scanId":"scan_7d9824ed"}
+2026-02-25T18:56:08.303Z [info]: Waiting for scan scan_7d9824ed to complete
+2026-02-25T18:56:08.303Z [info]: API Request: GET http://localhost:8080/api/scans/scan_7d9824ed {"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed"}
+2026-02-25T18:56:08.305Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_7d9824ed {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed","bodyPreview":"{\"id\":\"scan_7d9824ed\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:56:08.300Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:56:08.305Z [info]: Scan scan_7d9824ed current status: RUNNING
+2026-02-25T18:56:11.307Z [info]: API Request: GET http://localhost:8080/api/scans/scan_7d9824ed {"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed"}
+2026-02-25T18:56:11.312Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_7d9824ed {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed","bodyPreview":"{\"id\":\"scan_7d9824ed\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:56:08.300Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:56:11.312Z [info]: Scan scan_7d9824ed current status: RUNNING
+2026-02-25T18:56:14.313Z [info]: API Request: GET http://localhost:8080/api/scans/scan_7d9824ed {"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed"}
+2026-02-25T18:56:14.318Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_7d9824ed {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed","bodyPreview":"{\"id\":\"scan_7d9824ed\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:56:08.300Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:56:14.318Z [info]: Scan scan_7d9824ed current status: RUNNING
+2026-02-25T18:56:17.328Z [info]: API Request: GET http://localhost:8080/api/scans/scan_7d9824ed {"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed"}
+2026-02-25T18:56:17.344Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_7d9824ed {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed","bodyPreview":"{\"id\":\"scan_7d9824ed\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:56:08.300Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:56:17.345Z [info]: Scan scan_7d9824ed current status: RUNNING
+2026-02-25T18:56:20.347Z [info]: API Request: GET http://localhost:8080/api/scans/scan_7d9824ed {"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed"}
+2026-02-25T18:56:20.351Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_7d9824ed {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_7d9824ed","bodyPreview":"{\"id\":\"scan_7d9824ed\",\"status\":\"COMPLETED\",\"startedAt\":\"2026-02-25T18:56:08.300Z\",\"completedAt\":\"2026-02-25T18:56:17.936Z\",\"scannedAssetsCount\":8,\"alertsCreatedCount\":8}"}
+2026-02-25T18:56:20.351Z [info]: Scan scan_7d9824ed current status: COMPLETED
+2026-02-25T18:56:20.351Z [info]: Scan scan_7d9824ed completed
+2026-02-25T18:56:20.351Z [info]: API fixture: scan completed {"scanId":"scan_7d9824ed"}
+2026-02-25T18:56:20.352Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T18:56:20.356Z [info]: API Response: 200 GET http://localhost:8080/api/alerts {"status":200,"method":"GET","url":"http://localhost:8080/api/alerts","bodyPreview":"[{\"id\":\"alert_3b377dd7\",\"runId\":\"scan_7d9824ed\",\"policyId\":\"policy_008\",\"policyName\":\"Shadow IT Detection\",\"severity\":\"CRITICAL\",\"status\":\"OPEN\",\"wasRemediated\":false,\"remediationOrigin\":\"NONE\",\"createdSeverity\":\"CRITICAL\",\"violationType\":\"PUBLIC_ACCESS\",\"assetCategory\":\"SAAS\",\"cloudProvider\":null,\"dataStoreType\":null,\"saasTool\":\"SERVICENOW\",\"assetDisplayName\":\"change-pvp3iz\",\"assetLocation\":\"SERVICENOW/change-pvp3iz\",\"assetId\":\"servicenow-1g8j5g\",\"accountId\":\"org-56dp\",\"asset\":{\"id\":\"servicenow…"}
+2026-02-25T18:56:20.356Z [info]: API fixture: fetched alerts after scan {"count":8}
+2026-02-25T18:56:20.359Z [info]: API Request: POST http://localhost:8080/api/alerts/alert_3b377dd7/comments {"method":"POST","url":"http://localhost:8080/api/alerts/alert_3b377dd7/comments","data":{"message":"Test comment at 2026-02-25T18:56:20.359Z"}}
+2026-02-25T18:56:20.362Z [info]: API Response: 201 POST http://localhost:8080/api/alerts/alert_3b377dd7/comments {"status":201,"method":"POST","url":"http://localhost:8080/api/alerts/alert_3b377dd7/comments","bodyPreview":"{\"id\":\"comment_mm2eayyw_gmuvva\",\"author\":{\"id\":\"u_admin\",\"name\":\"Admin\"},\"message\":\"Test comment at 2026-02-25T18:56:20.359Z\",\"createdAt\":\"2026-02-25T18:56:20.360Z\"}"}

@@ -1,0 +1,24 @@
+2026-02-25T18:47:15.497Z [info]: API Request: POST http://localhost:8080/api/admin/reset {"method":"POST","url":"http://localhost:8080/api/admin/reset"}
+2026-02-25T18:47:15.520Z [info]: API Response: 200 POST http://localhost:8080/api/admin/reset {"status":200,"method":"POST","url":"http://localhost:8080/api/admin/reset","bodyPreview":"{\"success\":true,\"message\":\"Environment reset completed. Your workspace has been restored to its default state.\"}"}
+2026-02-25T18:47:16.584Z [info]: Fixture: starting scan to create alerts
+2026-02-25T18:47:16.587Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T18:47:16.596Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_618d20af\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:47:16.593Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:16.597Z [info]: Fixture: scan started {"scanId":"scan_618d20af"}
+2026-02-25T18:47:16.598Z [info]: Waiting for scan scan_618d20af to complete
+2026-02-25T18:47:16.600Z [info]: API Request: GET http://localhost:8080/api/scans/scan_618d20af {"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af"}
+2026-02-25T18:47:16.604Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_618d20af {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af","bodyPreview":"{\"id\":\"scan_618d20af\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:47:16.593Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:16.605Z [info]: Scan scan_618d20af current status: RUNNING
+2026-02-25T18:47:19.610Z [info]: API Request: GET http://localhost:8080/api/scans/scan_618d20af {"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af"}
+2026-02-25T18:47:19.621Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_618d20af {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af","bodyPreview":"{\"id\":\"scan_618d20af\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:47:16.593Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:19.622Z [info]: Scan scan_618d20af current status: RUNNING
+2026-02-25T18:47:22.629Z [info]: API Request: GET http://localhost:8080/api/scans/scan_618d20af {"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af"}
+2026-02-25T18:47:22.640Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_618d20af {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af","bodyPreview":"{\"id\":\"scan_618d20af\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:47:16.593Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:22.641Z [info]: Scan scan_618d20af current status: RUNNING
+2026-02-25T18:47:25.650Z [info]: API Request: GET http://localhost:8080/api/scans/scan_618d20af {"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af"}
+2026-02-25T18:47:25.665Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_618d20af {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_618d20af","bodyPreview":"{\"id\":\"scan_618d20af\",\"status\":\"COMPLETED\",\"startedAt\":\"2026-02-25T18:47:16.593Z\",\"completedAt\":\"2026-02-25T18:47:24.959Z\",\"scannedAssetsCount\":8,\"alertsCreatedCount\":8}"}
+2026-02-25T18:47:25.666Z [info]: Scan scan_618d20af current status: COMPLETED
+2026-02-25T18:47:25.666Z [info]: Scan scan_618d20af completed
+2026-02-25T18:47:25.666Z [info]: Fixture: scan completed
+2026-02-25T18:47:25.669Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T18:47:25.676Z [info]: API Response: 200 GET http://localhost:8080/api/alerts {"status":200,"method":"GET","url":"http://localhost:8080/api/alerts","bodyPreview":"[{\"id\":\"alert_7e5e810a\",\"runId\":\"scan_618d20af\",\"policyId\":\"policy_008\",\"policyName\":\"Shadow IT Detection\",\"severity\":\"CRITICAL\",\"status\":\"OPEN\",\"wasRemediated\":false,\"remediationOrigin\":\"NONE\",\"createdSeverity\":\"CRITICAL\",\"violationType\":\"PUBLIC_ACCESS\",\"assetCategory\":\"SAAS\",\"cloudProvider\":null,\"dataStoreType\":null,\"saasTool\":\"JIRA\",\"assetDisplayName\":\"PROJ-ajhjyt\",\"assetLocation\":\"JIRA/PROJ-ajhjyt\",\"assetId\":\"jira-ug8nmc\",\"accountId\":\"org-31ok\",\"asset\":{\"id\":\"jira-ug8nmc\",\"type\":\"JIRA\",\"loca…"}
+2026-02-25T18:47:25.676Z [info]: Fixture: fetched alerts {"count":8}

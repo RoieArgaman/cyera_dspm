@@ -1,0 +1,4 @@
+2026-02-25T07:51:14.127Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T07:51:14.132Z [info]: API Response: 201 POST /api/scans {"status":201,"method":"POST","url":"/api/scans"}
+2026-02-25T07:51:14.133Z [info]: API Request: GET http://localhost:8080/api/scans/scan_24336ba1 {"method":"GET","url":"http://localhost:8080/api/scans/scan_24336ba1"}
+2026-02-25T07:51:14.134Z [info]: API Response: 200 GET /api/scans/scan_24336ba1 {"status":200,"method":"GET","url":"/api/scans/scan_24336ba1"}

@@ -1,0 +1,4 @@
+2026-02-25T08:12:08.166Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T08:12:08.170Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_61621bd9\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T08:12:08.168Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T08:12:08.171Z [info]: API Request: GET http://localhost:8080/api/scans/scan_61621bd9 {"method":"GET","url":"http://localhost:8080/api/scans/scan_61621bd9"}
+2026-02-25T08:12:08.173Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_61621bd9 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_61621bd9","bodyPreview":"{\"id\":\"scan_61621bd9\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T08:12:08.168Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}

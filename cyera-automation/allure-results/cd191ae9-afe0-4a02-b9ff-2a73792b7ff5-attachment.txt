@@ -1,0 +1,27 @@
+2026-02-25T18:49:51.239Z [info]: API Request: POST http://localhost:8080/api/admin/reset {"method":"POST","url":"http://localhost:8080/api/admin/reset"}
+2026-02-25T18:49:51.260Z [info]: API Response: 200 POST http://localhost:8080/api/admin/reset {"status":200,"method":"POST","url":"http://localhost:8080/api/admin/reset","bodyPreview":"{\"success\":true,\"message\":\"Environment reset completed. Your workspace has been restored to its default state.\"}"}
+2026-02-25T18:49:52.670Z [info]: Fixture: starting scan to create alerts
+2026-02-25T18:49:52.673Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T18:49:52.686Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_e2264295\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:49:52.682Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:49:52.687Z [info]: Fixture: scan started {"scanId":"scan_e2264295"}
+2026-02-25T18:49:52.687Z [info]: Waiting for scan scan_e2264295 to complete
+2026-02-25T18:49:52.688Z [info]: API Request: GET http://localhost:8080/api/scans/scan_e2264295 {"method":"GET","url":"http://localhost:8080/api/scans/scan_e2264295"}
+2026-02-25T18:49:52.694Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_e2264295 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_e2264295","bodyPreview":"{\"id\":\"scan_e2264295\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:49:52.682Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:49:52.694Z [info]: Scan scan_e2264295 current status: RUNNING
+2026-02-25T18:49:55.701Z [info]: API Request: GET http://localhost:8080/api/scans/scan_e2264295 {"method":"GET","url":"http://localhost:8080/api/scans/scan_e2264295"}
+2026-02-25T18:49:55.714Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_e2264295 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_e2264295","bodyPreview":"{\"id\":\"scan_e2264295\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:49:52.682Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:49:55.715Z [info]: Scan scan_e2264295 current status: RUNNING
+2026-02-25T18:49:58.719Z [info]: API Request: GET http://localhost:8080/api/scans/scan_e2264295 {"method":"GET","url":"http://localhost:8080/api/scans/scan_e2264295"}
+2026-02-25T18:49:58.731Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_e2264295 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_e2264295","bodyPreview":"{\"id\":\"scan_e2264295\",\"status\":\"COMPLETED\",\"startedAt\":\"2026-02-25T18:49:52.682Z\",\"completedAt\":\"2026-02-25T18:49:58.426Z\",\"scannedAssetsCount\":8,\"alertsCreatedCount\":8}"}
+2026-02-25T18:49:58.731Z [info]: Scan scan_e2264295 current status: COMPLETED
+2026-02-25T18:49:58.732Z [info]: Scan scan_e2264295 completed
+2026-02-25T18:49:58.732Z [info]: Fixture: scan completed
+2026-02-25T18:49:58.737Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T18:49:58.746Z [info]: API Response: 200 GET http://localhost:8080/api/alerts {"status":200,"method":"GET","url":"http://localhost:8080/api/alerts","bodyPreview":"[{\"id\":\"alert_20bdfb18\",\"runId\":\"scan_e2264295\",\"policyId\":\"policy_008\",\"policyName\":\"Shadow IT Detection\",\"severity\":\"CRITICAL\",\"status\":\"OPEN\",\"wasRemediated\":false,\"remediationOrigin\":\"NONE\",\"createdSeverity\":\"CRITICAL\",\"violationType\":\"PUBLIC_ACCESS\",\"assetCategory\":\"SAAS\",\"cloudProvider\":null,\"dataStoreType\":null,\"saasTool\":\"GRAFANA\",\"assetDisplayName\":\"panel-ytpbzv\",\"assetLocation\":\"GRAFANA/panel-ytpbzv\",\"assetId\":\"grafana-9sa9z1\",\"accountId\":\"org-bcb9\",\"asset\":{\"id\":\"grafana-9sa9z1\",\"type…"}
+2026-02-25T18:49:58.748Z [info]: Fixture: fetched alerts {"count":8}
+2026-02-25T18:49:58.748Z [info]: Fixture: found candidate alert {"alertId":"alert_20bdfb18","status":"OPEN"}
+2026-02-25T18:49:58.748Z [info]: Fixture: candidate already OPEN, skipping update
+2026-02-25T18:49:58.749Z [info]: Navigate to Alerts page {"args":[]}
+2026-02-25T18:49:59.713Z [info]: Click first alert matching status and auto-remediate {"args":["Open",false]}
+2026-02-25T18:49:59.839Z [info]: Change alert status {"args":["In Progress"]}
+2026-02-25T18:50:02.204Z [info]: Remediate alert {"args":["Manual remediation initiated for security review"]}

@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { step } from '../../test/stepDecorator';
+import { step } from '../../decorators/stepDecorator';
 
 export class AlertDetailPage extends BasePage {
   private readonly drawer: Locator;
@@ -16,7 +16,8 @@ export class AlertDetailPage extends BasePage {
     this.drawer = page.locator('[data-testid="alert-details-drawer"]');
     this.statusSelect = page.locator('#alert-status');
     this.assigneeSelect = page.locator('#alert-assignee');
-    this.remediateButton = page.getByRole('button', { name: 'Remediate' });
+    // Scope Remediate button to the alert details drawer to avoid strict-mode conflicts
+    this.remediateButton = this.drawer.getByRole('button', { name: 'Remediate' });
     this.remediationNoteInput = page.locator('textarea[aria-label="Remediation note"]');
     this.commentTextarea = page.locator('textarea[aria-label="Comment message"]');
     this.postCommentButton = page.getByRole('button', { name: 'Post Comment' });

@@ -1,0 +1,2 @@
+2026-02-25T08:13:07.913Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T08:13:07.918Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_f58bd4f4\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T08:13:07.915Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}

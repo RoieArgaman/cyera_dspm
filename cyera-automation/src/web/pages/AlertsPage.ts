@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { step } from '../../test/stepDecorator';
+import { step } from '../../decorators/stepDecorator';
 
 export class AlertsPage extends BasePage {
   readonly alertsPageRoot: Locator;
@@ -11,7 +11,8 @@ export class AlertsPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.alertsPageRoot = page.getByTestId('alerts-page');
-    this.alertsTable = page.getByRole('table', { name: 'Alerts list' });
+    // Prefer table labeled "Alerts list" on alerts page; fallback to policies-table for reuse
+    this.alertsTable = page.getByRole('table', { name: 'Alerts list' }).or(page.getByTestId('policies-table'));
     this.loadingState = page.getByText('Loading alerts...');
     this.alertRows = this.alertsTable.locator('tbody tr');
   }
@@ -60,9 +61,10 @@ export class AlertsPage extends BasePage {
       const autoRemValue = (await autoRemCell.textContent())?.trim() ?? '';
 
       const matchesStatus = statusValue.toUpperCase().includes(statusText.toUpperCase());
+      const autoRemUpper = autoRemValue.toUpperCase();
       const matchesAutoRem = autoRemediate
-        ? autoRemValue.toUpperCase() === 'ON'
-        : autoRemValue.toUpperCase() === 'OFF';
+        ? autoRemUpper === 'ON'
+        : (autoRemUpper === 'OFF' || autoRemUpper === '' || autoRemUpper === 'NO' || autoRemUpper === '—');
 
       if (matchesStatus && matchesAutoRem) {
         await row.click();

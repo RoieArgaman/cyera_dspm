@@ -1,0 +1,26 @@
+2026-02-25T07:38:48.667Z [info]: Step 1: Starting initial scan
+2026-02-25T07:38:48.671Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T07:38:48.692Z [info]: API Response: 201 POST /api/scans {"status":201,"method":"POST","url":"/api/scans"}
+2026-02-25T07:38:48.696Z [info]: Scan started with ID: scan_edc35fb8
+2026-02-25T07:38:48.697Z [info]: Step 2: Waiting for initial scan to complete
+2026-02-25T07:38:48.697Z [info]: Waiting for scan scan_edc35fb8 to complete
+2026-02-25T07:38:48.699Z [info]: API Request: GET http://localhost:8080/api/scans/scan_edc35fb8 {"method":"GET","url":"http://localhost:8080/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:48.707Z [info]: API Response: 200 GET /api/scans/scan_edc35fb8 {"status":200,"method":"GET","url":"/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:48.707Z [info]: Scan scan_edc35fb8 current status: RUNNING
+2026-02-25T07:38:51.710Z [info]: API Request: GET http://localhost:8080/api/scans/scan_edc35fb8 {"method":"GET","url":"http://localhost:8080/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:51.724Z [info]: API Response: 200 GET /api/scans/scan_edc35fb8 {"status":200,"method":"GET","url":"/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:51.725Z [info]: Scan scan_edc35fb8 current status: RUNNING
+2026-02-25T07:38:54.727Z [info]: API Request: GET http://localhost:8080/api/scans/scan_edc35fb8 {"method":"GET","url":"http://localhost:8080/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:54.736Z [info]: API Response: 200 GET /api/scans/scan_edc35fb8 {"status":200,"method":"GET","url":"/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:54.737Z [info]: Scan scan_edc35fb8 current status: RUNNING
+2026-02-25T07:38:57.739Z [info]: API Request: GET http://localhost:8080/api/scans/scan_edc35fb8 {"method":"GET","url":"http://localhost:8080/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:57.753Z [info]: API Response: 200 GET /api/scans/scan_edc35fb8 {"status":200,"method":"GET","url":"/api/scans/scan_edc35fb8"}
+2026-02-25T07:38:57.754Z [info]: Scan scan_edc35fb8 current status: RUNNING
+2026-02-25T07:39:00.758Z [info]: API Request: GET http://localhost:8080/api/scans/scan_edc35fb8 {"method":"GET","url":"http://localhost:8080/api/scans/scan_edc35fb8"}
+2026-02-25T07:39:00.768Z [info]: API Response: 200 GET /api/scans/scan_edc35fb8 {"status":200,"method":"GET","url":"/api/scans/scan_edc35fb8"}
+2026-02-25T07:39:00.769Z [info]: Scan scan_edc35fb8 current status: COMPLETED
+2026-02-25T07:39:00.769Z [info]: Scan scan_edc35fb8 completed
+2026-02-25T07:39:00.769Z [info]: Step 3: Finding auto-remediate alert
+2026-02-25T07:39:00.770Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T07:39:00.779Z [info]: API Response: 200 GET /api/alerts {"status":200,"method":"GET","url":"/api/alerts"}
+2026-02-25T07:39:00.780Z [info]: Total alerts found: 8

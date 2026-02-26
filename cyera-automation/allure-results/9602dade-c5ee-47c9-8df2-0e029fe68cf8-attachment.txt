@@ -1,0 +1,21 @@
+2026-02-25T18:47:26.925Z [info]: API Request: POST http://localhost:8080/api/admin/reset {"method":"POST","url":"http://localhost:8080/api/admin/reset"}
+2026-02-25T18:47:26.948Z [info]: API Response: 200 POST http://localhost:8080/api/admin/reset {"status":200,"method":"POST","url":"http://localhost:8080/api/admin/reset","bodyPreview":"{\"success\":true,\"message\":\"Environment reset completed. Your workspace has been restored to its default state.\"}"}
+2026-02-25T18:47:28.120Z [info]: Fixture: starting scan to create alerts
+2026-02-25T18:47:28.122Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T18:47:28.130Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_20b9df8d\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:47:28.127Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:28.131Z [info]: Fixture: scan started {"scanId":"scan_20b9df8d"}
+2026-02-25T18:47:28.131Z [info]: Waiting for scan scan_20b9df8d to complete
+2026-02-25T18:47:28.133Z [info]: API Request: GET http://localhost:8080/api/scans/scan_20b9df8d {"method":"GET","url":"http://localhost:8080/api/scans/scan_20b9df8d"}
+2026-02-25T18:47:28.137Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_20b9df8d {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_20b9df8d","bodyPreview":"{\"id\":\"scan_20b9df8d\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:47:28.127Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:28.137Z [info]: Scan scan_20b9df8d current status: RUNNING
+2026-02-25T18:47:31.143Z [info]: API Request: GET http://localhost:8080/api/scans/scan_20b9df8d {"method":"GET","url":"http://localhost:8080/api/scans/scan_20b9df8d"}
+2026-02-25T18:47:31.151Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_20b9df8d {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_20b9df8d","bodyPreview":"{\"id\":\"scan_20b9df8d\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:47:28.127Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:31.152Z [info]: Scan scan_20b9df8d current status: RUNNING
+2026-02-25T18:47:34.156Z [info]: API Request: GET http://localhost:8080/api/scans/scan_20b9df8d {"method":"GET","url":"http://localhost:8080/api/scans/scan_20b9df8d"}
+2026-02-25T18:47:34.164Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_20b9df8d {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_20b9df8d","bodyPreview":"{\"id\":\"scan_20b9df8d\",\"status\":\"COMPLETED\",\"startedAt\":\"2026-02-25T18:47:28.127Z\",\"completedAt\":\"2026-02-25T18:47:33.359Z\",\"scannedAssetsCount\":8,\"alertsCreatedCount\":8}"}
+2026-02-25T18:47:34.165Z [info]: Scan scan_20b9df8d current status: COMPLETED
+2026-02-25T18:47:34.166Z [info]: Scan scan_20b9df8d completed
+2026-02-25T18:47:34.166Z [info]: Fixture: scan completed
+2026-02-25T18:47:34.168Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T18:47:34.177Z [info]: API Response: 200 GET http://localhost:8080/api/alerts {"status":200,"method":"GET","url":"http://localhost:8080/api/alerts","bodyPreview":"[{\"id\":\"alert_18d830c5\",\"runId\":\"scan_20b9df8d\",\"policyId\":\"policy_008\",\"policyName\":\"Shadow IT Detection\",\"severity\":\"CRITICAL\",\"status\":\"OPEN\",\"wasRemediated\":false,\"remediationOrigin\":\"NONE\",\"createdSeverity\":\"CRITICAL\",\"violationType\":\"PUBLIC_ACCESS\",\"assetCategory\":\"SAAS\",\"cloudProvider\":null,\"dataStoreType\":null,\"saasTool\":\"SERVICENOW\",\"assetDisplayName\":\"request-z2q6g3\",\"assetLocation\":\"SERVICENOW/request-z2q6g3\",\"assetId\":\"servicenow-27nzj5\",\"accountId\":\"org-seiq\",\"asset\":{\"id\":\"servicen…"}
+2026-02-25T18:47:34.178Z [info]: Fixture: fetched alerts {"count":8}

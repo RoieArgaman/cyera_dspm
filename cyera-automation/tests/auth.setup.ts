@@ -34,6 +34,17 @@ setup('authenticate via browser and save session', async ({ page }) => {
     username: USERNAME,
     password: PASSWORD,
   });
+
+  await axios.post(
+    `${API_URL}/api/admin/reset`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${loginResponse.data.token}`,
+      },
+    },
+  );
+
   const tokenPath = path.join(authDir, 'token.json');
   fs.writeFileSync(tokenPath, JSON.stringify({ token: loginResponse.data.token }, null, 2));
 });

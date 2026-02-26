@@ -1,0 +1,1 @@
+2026-02-25T18:44:41.898Z [error]: API Error: 400 PATCH http://localhost:8080/api/alerts/alert_596ee736 {"status":400,"method":"PATCH","url":"http://localhost:8080/api/alerts/alert_596ee736","bodyPreview":"{\"error\":\"Invalid status transition from IN_PROGRESS to OPEN. Valid transitions: RESOLVED\"}"}

@@ -1,0 +1,29 @@
+2026-02-25T19:01:33.484Z [info]: API Request: POST http://localhost:8080/api/admin/reset {"method":"POST","url":"http://localhost:8080/api/admin/reset"}
+2026-02-25T19:01:33.488Z [info]: API Response: 200 POST http://localhost:8080/api/admin/reset {"status":200,"method":"POST","url":"http://localhost:8080/api/admin/reset","bodyPreview":"{\"success\":true,\"message\":\"Environment reset completed. Your workspace has been restored to its default state.\"}"}
+2026-02-25T19:01:33.488Z [info]: API fixture: starting scan to seed alerts
+2026-02-25T19:01:33.489Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T19:01:33.491Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_ddbcf4be\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T19:01:33.489Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T19:01:33.491Z [info]: API fixture: scan started {"scanId":"scan_ddbcf4be"}
+2026-02-25T19:01:33.491Z [info]: Waiting for scan scan_ddbcf4be to complete
+2026-02-25T19:01:33.492Z [info]: API Request: GET http://localhost:8080/api/scans/scan_ddbcf4be {"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be"}
+2026-02-25T19:01:33.493Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_ddbcf4be {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be","bodyPreview":"{\"id\":\"scan_ddbcf4be\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T19:01:33.489Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T19:01:33.493Z [info]: Scan scan_ddbcf4be current status: RUNNING
+2026-02-25T19:01:36.494Z [info]: API Request: GET http://localhost:8080/api/scans/scan_ddbcf4be {"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be"}
+2026-02-25T19:01:36.498Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_ddbcf4be {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be","bodyPreview":"{\"id\":\"scan_ddbcf4be\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T19:01:33.489Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T19:01:36.498Z [info]: Scan scan_ddbcf4be current status: RUNNING
+2026-02-25T19:01:39.502Z [info]: API Request: GET http://localhost:8080/api/scans/scan_ddbcf4be {"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be"}
+2026-02-25T19:01:39.510Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_ddbcf4be {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be","bodyPreview":"{\"id\":\"scan_ddbcf4be\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T19:01:33.489Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T19:01:39.511Z [info]: Scan scan_ddbcf4be current status: RUNNING
+2026-02-25T19:01:42.512Z [info]: API Request: GET http://localhost:8080/api/scans/scan_ddbcf4be {"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be"}
+2026-02-25T19:01:42.516Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_ddbcf4be {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be","bodyPreview":"{\"id\":\"scan_ddbcf4be\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T19:01:33.489Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T19:01:42.516Z [info]: Scan scan_ddbcf4be current status: RUNNING
+2026-02-25T19:01:45.518Z [info]: API Request: GET http://localhost:8080/api/scans/scan_ddbcf4be {"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be"}
+2026-02-25T19:01:45.522Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_ddbcf4be {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_ddbcf4be","bodyPreview":"{\"id\":\"scan_ddbcf4be\",\"status\":\"COMPLETED\",\"startedAt\":\"2026-02-25T19:01:33.489Z\",\"completedAt\":\"2026-02-25T19:01:42.711Z\",\"scannedAssetsCount\":8,\"alertsCreatedCount\":8}"}
+2026-02-25T19:01:45.522Z [info]: Scan scan_ddbcf4be current status: COMPLETED
+2026-02-25T19:01:45.523Z [info]: Scan scan_ddbcf4be completed
+2026-02-25T19:01:45.523Z [info]: API fixture: scan completed {"scanId":"scan_ddbcf4be"}
+2026-02-25T19:01:45.523Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T19:01:45.527Z [info]: API Response: 200 GET http://localhost:8080/api/alerts {"status":200,"method":"GET","url":"http://localhost:8080/api/alerts","bodyPreview":"[{\"id\":\"alert_9e93b336\",\"runId\":\"scan_ddbcf4be\",\"policyId\":\"policy_008\",\"policyName\":\"Shadow IT Detection\",\"severity\":\"CRITICAL\",\"status\":\"OPEN\",\"wasRemediated\":false,\"remediationOrigin\":\"NONE\",\"createdSeverity\":\"CRITICAL\",\"violationType\":\"PUBLIC_ACCESS\",\"assetCategory\":\"SAAS\",\"cloudProvider\":null,\"dataStoreType\":null,\"saasTool\":\"SNOWFLAKE\",\"assetDisplayName\":\"warehouse-2uv3fe\",\"assetLocation\":\"SNOWFLAKE/warehouse-2uv3fe\",\"assetId\":\"snowflake-9omg52\",\"accountId\":\"org-022c\",\"asset\":{\"id\":\"snowfla…"}
+2026-02-25T19:01:45.528Z [info]: API fixture: fetched alerts after scan {"count":8}
+2026-02-25T19:01:45.530Z [info]: API Request: POST http://localhost:8080/api/alerts/alert_9e93b336/comments {"method":"POST","url":"http://localhost:8080/api/alerts/alert_9e93b336/comments","data":{"message":"Test comment at 2026-02-25T19:01:45.529Z"}}
+2026-02-25T19:01:45.534Z [info]: API Response: 201 POST http://localhost:8080/api/alerts/alert_9e93b336/comments {"status":201,"method":"POST","url":"http://localhost:8080/api/alerts/alert_9e93b336/comments","bodyPreview":"{\"id\":\"comment_mm2ehxvg_9wrefd\",\"author\":{\"id\":\"u_admin\",\"name\":\"Admin\"},\"message\":\"Test comment at 2026-02-25T19:01:45.529Z\",\"createdAt\":\"2026-02-25T19:01:45.532Z\"}"}

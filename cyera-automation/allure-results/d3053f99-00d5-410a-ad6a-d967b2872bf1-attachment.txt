@@ -1,0 +1,4 @@
+2026-02-25T07:51:13.944Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T07:51:13.954Z [info]: API Response: 200 GET /api/alerts {"status":200,"method":"GET","url":"/api/alerts"}
+2026-02-25T07:51:13.955Z [info]: API Request: GET http://localhost:8080/api/alerts/alert_005f941f {"method":"GET","url":"http://localhost:8080/api/alerts/alert_005f941f"}
+2026-02-25T07:51:13.958Z [info]: API Response: 200 GET /api/alerts/alert_005f941f {"status":200,"method":"GET","url":"/api/alerts/alert_005f941f"}

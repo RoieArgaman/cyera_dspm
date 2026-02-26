@@ -1,0 +1,23 @@
+2026-02-25T07:51:03.678Z [info]: Step 1: Starting initial scan
+2026-02-25T07:51:03.687Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T07:51:03.709Z [info]: API Response: 201 POST /api/scans {"status":201,"method":"POST","url":"/api/scans"}
+2026-02-25T07:51:03.712Z [info]: Scan started with ID: scan_499d216f
+2026-02-25T07:51:03.712Z [info]: Step 2: Waiting for initial scan to complete
+2026-02-25T07:51:03.713Z [info]: Waiting for scan scan_499d216f to complete
+2026-02-25T07:51:03.716Z [info]: API Request: GET http://localhost:8080/api/scans/scan_499d216f {"method":"GET","url":"http://localhost:8080/api/scans/scan_499d216f"}
+2026-02-25T07:51:03.723Z [info]: API Response: 200 GET /api/scans/scan_499d216f {"status":200,"method":"GET","url":"/api/scans/scan_499d216f"}
+2026-02-25T07:51:03.723Z [info]: Scan scan_499d216f current status: RUNNING
+2026-02-25T07:51:06.726Z [info]: API Request: GET http://localhost:8080/api/scans/scan_499d216f {"method":"GET","url":"http://localhost:8080/api/scans/scan_499d216f"}
+2026-02-25T07:51:06.736Z [info]: API Response: 200 GET /api/scans/scan_499d216f {"status":200,"method":"GET","url":"/api/scans/scan_499d216f"}
+2026-02-25T07:51:06.737Z [info]: Scan scan_499d216f current status: RUNNING
+2026-02-25T07:51:09.743Z [info]: API Request: GET http://localhost:8080/api/scans/scan_499d216f {"method":"GET","url":"http://localhost:8080/api/scans/scan_499d216f"}
+2026-02-25T07:51:09.753Z [info]: API Response: 200 GET /api/scans/scan_499d216f {"status":200,"method":"GET","url":"/api/scans/scan_499d216f"}
+2026-02-25T07:51:09.754Z [info]: Scan scan_499d216f current status: RUNNING
+2026-02-25T07:51:12.774Z [info]: API Request: GET http://localhost:8080/api/scans/scan_499d216f {"method":"GET","url":"http://localhost:8080/api/scans/scan_499d216f"}
+2026-02-25T07:51:12.797Z [info]: API Response: 200 GET /api/scans/scan_499d216f {"status":200,"method":"GET","url":"/api/scans/scan_499d216f"}
+2026-02-25T07:51:12.798Z [info]: Scan scan_499d216f current status: COMPLETED
+2026-02-25T07:51:12.799Z [info]: Scan scan_499d216f completed
+2026-02-25T07:51:12.799Z [info]: Step 3: Finding auto-remediate alert
+2026-02-25T07:51:12.803Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T07:51:12.814Z [info]: API Response: 200 GET /api/alerts {"status":200,"method":"GET","url":"/api/alerts"}
+2026-02-25T07:51:12.814Z [info]: Total alerts found: 40

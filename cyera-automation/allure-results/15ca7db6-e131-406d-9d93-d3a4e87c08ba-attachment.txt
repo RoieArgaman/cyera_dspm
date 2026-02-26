@@ -1,0 +1,26 @@
+2026-02-26T07:38:36.692Z [info]: API Request: POST http://localhost:8080/api/admin/reset {"method":"POST","url":"http://localhost:8080/api/admin/reset"}
+2026-02-26T07:38:36.697Z [info]: API Response: 200 POST http://localhost:8080/api/admin/reset {"status":200,"method":"POST","url":"http://localhost:8080/api/admin/reset","bodyPreview":"{\"success\":true,\"message\":\"Environment reset completed. Your workspace has been restored to its default state.\"}"}
+2026-02-26T07:38:36.698Z [info]: API fixture: starting scan to seed alerts
+2026-02-26T07:38:36.699Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-26T07:38:36.702Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_94374c60\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-26T07:38:36.700Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-26T07:38:36.703Z [info]: API fixture: scan started {"scanId":"scan_94374c60"}
+2026-02-26T07:38:36.703Z [info]: Waiting for scan scan_94374c60 to complete
+2026-02-26T07:38:36.703Z [info]: API Request: GET http://localhost:8080/api/scans/scan_94374c60 {"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60"}
+2026-02-26T07:38:36.706Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_94374c60 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60","bodyPreview":"{\"id\":\"scan_94374c60\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-26T07:38:36.700Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-26T07:38:36.706Z [info]: Scan scan_94374c60 current status: RUNNING
+2026-02-26T07:38:39.722Z [info]: API Request: GET http://localhost:8080/api/scans/scan_94374c60 {"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60"}
+2026-02-26T07:38:39.734Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_94374c60 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60","bodyPreview":"{\"id\":\"scan_94374c60\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-26T07:38:36.700Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-26T07:38:39.735Z [info]: Scan scan_94374c60 current status: RUNNING
+2026-02-26T07:38:42.739Z [info]: API Request: GET http://localhost:8080/api/scans/scan_94374c60 {"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60"}
+2026-02-26T07:38:42.747Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_94374c60 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60","bodyPreview":"{\"id\":\"scan_94374c60\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-26T07:38:36.700Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-26T07:38:42.747Z [info]: Scan scan_94374c60 current status: RUNNING
+2026-02-26T07:38:45.770Z [info]: API Request: GET http://localhost:8080/api/scans/scan_94374c60 {"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60"}
+2026-02-26T07:38:45.804Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_94374c60 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_94374c60","bodyPreview":"{\"id\":\"scan_94374c60\",\"status\":\"COMPLETED\",\"startedAt\":\"2026-02-26T07:38:36.700Z\",\"completedAt\":\"2026-02-26T07:38:44.036Z\",\"scannedAssetsCount\":8,\"alertsCreatedCount\":8}"}
+2026-02-26T07:38:45.804Z [info]: Scan scan_94374c60 current status: COMPLETED
+2026-02-26T07:38:45.804Z [info]: Scan scan_94374c60 completed
+2026-02-26T07:38:45.805Z [info]: API fixture: scan completed {"scanId":"scan_94374c60"}
+2026-02-26T07:38:45.805Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-26T07:38:45.810Z [info]: API Response: 200 GET http://localhost:8080/api/alerts {"status":200,"method":"GET","url":"http://localhost:8080/api/alerts","bodyPreview":"[{\"id\":\"alert_a17a7d96\",\"runId\":\"scan_94374c60\",\"policyId\":\"policy_008\",\"policyName\":\"Shadow IT Detection\",\"severity\":\"CRITICAL\",\"status\":\"OPEN\",\"wasRemediated\":false,\"remediationOrigin\":\"NONE\",\"createdSeverity\":\"CRITICAL\",\"violationType\":\"PUBLIC_ACCESS\",\"assetCategory\":\"SAAS\",\"cloudProvider\":null,\"dataStoreType\":null,\"saasTool\":\"SERVICENOW\",\"assetDisplayName\":\"incident-xdv1r4\",\"assetLocation\":\"SERVICENOW/incident-xdv1r4\",\"assetId\":\"servicenow-gotff3\",\"accountId\":\"org-1766\",\"asset\":{\"id\":\"servic…"}
+2026-02-26T07:38:45.811Z [info]: API fixture: fetched alerts after scan {"count":8}
+2026-02-26T07:38:45.817Z [info]: API Request: POST http://localhost:8080/api/alerts/alert_a17a7d96/comments {"method":"POST","url":"http://localhost:8080/api/alerts/alert_a17a7d96/comments","data":{"message":"Test comment at 2026-02-26T07:38:45.816Z"}}
+2026-02-26T07:38:45.821Z [info]: API Response: 201 POST http://localhost:8080/api/alerts/alert_a17a7d96/comments {"status":201,"method":"POST","url":"http://localhost:8080/api/alerts/alert_a17a7d96/comments","bodyPreview":"{\"id\":\"comment_mm35jge3_mlu3ie\",\"author\":{\"id\":\"u_admin\",\"name\":\"Admin\"},\"message\":\"Test comment at 2026-02-26T07:38:45.816Z\",\"createdAt\":\"2026-02-26T07:38:45.819Z\"}"}

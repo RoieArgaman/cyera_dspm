@@ -2,6 +2,30 @@
 
 This guide describes how we structure Playwright Page Objects and tests in `cyera-automation/`. It is meant to be **practical and opinionated** so that new code looks and behaves the same as existing code.
 
+## Running tests, reports, and teardown
+
+- **Projects and teardown flow**
+  - Playwright defines four projects:
+    - `setup` – `tests/auth.setup.ts` (logs in, writes `.auth/session.json` and `.auth/token.json`).
+    - `ui` – `tests/ui/**/*.spec.ts`, depends on `setup`.
+    - `api` – `tests/api/**/*.spec.ts`, depends on `setup`.
+    - `teardown` – `tests/teardown.setup.ts`, runs as the teardown of the `setup` project.
+  - When you run `npx playwright test` (or `npm test` from `cyera-automation`):
+    - `setup` runs first.
+    - `ui` / `api` run next.
+    - `teardown` runs once at the end, even if some tests failed.
+  - **Headless behavior**: The `setup` project is configured to always run headless (`headless: true` in its project `use` block), regardless of the global `headless` default in `playwright.config.ts`. So only the login/setup step runs without a visible browser; `ui` and `api` tests follow the global setting (e.g. headed by default for local debugging).
+- **Environment reset**
+  - Environment cleanup lives in `tests/teardown.setup.ts` as a test named `reset environment after all tests`.
+  - It uses `ApiClient.admin.resetData()` to reset the backend and logs structured events with `operation: 'teardown.resetEnvironment'`.
+  - From `logs/run.log` (or the trace Logs panel) you can quickly see:
+    - Whether teardown ran at all (look for `operation: 'teardown.resetEnvironment'`).
+    - If it skipped due to a missing token file.
+    - Whether the reset call reported `success` and what `message` it returned.
+- **HTML report**
+  - Playwright’s HTML reporter is configured to open automatically on local runs (`open: 'always'` in `playwright.config.ts`).
+  - After a run, use `npx playwright show-report` (or rely on the auto-open behavior) to inspect tests, API steps, and teardown behavior.
+
 ## Page Object philosophy
 
 - **Why Page Objects**

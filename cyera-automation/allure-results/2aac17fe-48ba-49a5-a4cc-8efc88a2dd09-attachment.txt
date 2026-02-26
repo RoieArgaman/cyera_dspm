@@ -1,0 +1,9 @@
+2026-02-25T07:39:01.959Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T07:39:01.965Z [info]: API Response: 200 GET /api/alerts {"status":200,"method":"GET","url":"/api/alerts"}
+2026-02-25T07:39:01.968Z [info]: API Request: PATCH http://localhost:8080/api/alerts/alert_e7a65c87 {"method":"PATCH","url":"http://localhost:8080/api/alerts/alert_e7a65c87","data":{"status":"IN_PROGRESS"}}
+2026-02-25T07:39:01.973Z [info]: API Response: 200 PATCH /api/alerts/alert_e7a65c87 {"status":200,"method":"PATCH","url":"/api/alerts/alert_e7a65c87"}
+2026-02-25T07:39:01.976Z [info]: API Request: PATCH http://localhost:8080/api/alerts/alert_e7a65c87 {"method":"PATCH","url":"http://localhost:8080/api/alerts/alert_e7a65c87","data":{"status":"OPEN"}}
+2026-02-25T07:39:02.004Z [info]: API Request: PATCH http://localhost:8080/api/alerts/alert_e7a65c87 {"method":"PATCH","url":"http://localhost:8080/api/alerts/alert_e7a65c87","data":{"status":"RESOLVED"}}
+2026-02-25T07:39:02.009Z [info]: API Response: 200 PATCH /api/alerts/alert_e7a65c87 {"status":200,"method":"PATCH","url":"/api/alerts/alert_e7a65c87"}
+2026-02-25T07:39:02.010Z [info]: API Request: PATCH http://localhost:8080/api/alerts/alert_e7a65c87 {"method":"PATCH","url":"http://localhost:8080/api/alerts/alert_e7a65c87","data":{"status":"REOPEN"}}
+2026-02-25T07:39:02.015Z [info]: API Response: 200 PATCH /api/alerts/alert_e7a65c87 {"status":200,"method":"PATCH","url":"/api/alerts/alert_e7a65c87"}

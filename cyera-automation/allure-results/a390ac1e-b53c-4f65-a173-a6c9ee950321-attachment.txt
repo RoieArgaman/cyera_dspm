@@ -1,0 +1,22 @@
+2026-02-25T18:46:58.379Z [info]: API Request: POST http://localhost:8080/api/admin/reset {"method":"POST","url":"http://localhost:8080/api/admin/reset"}
+2026-02-25T18:46:58.403Z [info]: API Response: 200 POST http://localhost:8080/api/admin/reset {"status":200,"method":"POST","url":"http://localhost:8080/api/admin/reset","bodyPreview":"{\"success\":true,\"message\":\"Environment reset completed. Your workspace has been restored to its default state.\"}"}
+2026-02-25T18:46:58.405Z [info]: Step 1: Starting initial scan
+2026-02-25T18:46:58.408Z [info]: API Request: POST http://localhost:8080/api/scans {"method":"POST","url":"http://localhost:8080/api/scans"}
+2026-02-25T18:46:58.416Z [info]: API Response: 201 POST http://localhost:8080/api/scans {"status":201,"method":"POST","url":"http://localhost:8080/api/scans","bodyPreview":"{\"id\":\"scan_b9098cf4\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:46:58.411Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:46:58.419Z [info]: Scan started with ID: scan_b9098cf4
+2026-02-25T18:46:58.419Z [info]: Step 2: Waiting for initial scan to complete
+2026-02-25T18:46:58.420Z [info]: Waiting for scan scan_b9098cf4 to complete
+2026-02-25T18:46:58.421Z [info]: API Request: GET http://localhost:8080/api/scans/scan_b9098cf4 {"method":"GET","url":"http://localhost:8080/api/scans/scan_b9098cf4"}
+2026-02-25T18:46:58.427Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_b9098cf4 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_b9098cf4","bodyPreview":"{\"id\":\"scan_b9098cf4\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:46:58.411Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:46:58.428Z [info]: Scan scan_b9098cf4 current status: RUNNING
+2026-02-25T18:47:01.432Z [info]: API Request: GET http://localhost:8080/api/scans/scan_b9098cf4 {"method":"GET","url":"http://localhost:8080/api/scans/scan_b9098cf4"}
+2026-02-25T18:47:01.440Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_b9098cf4 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_b9098cf4","bodyPreview":"{\"id\":\"scan_b9098cf4\",\"status\":\"RUNNING\",\"startedAt\":\"2026-02-25T18:46:58.411Z\",\"scannedAssetsCount\":0,\"alertsCreatedCount\":0}"}
+2026-02-25T18:47:01.440Z [info]: Scan scan_b9098cf4 current status: RUNNING
+2026-02-25T18:47:04.444Z [info]: API Request: GET http://localhost:8080/api/scans/scan_b9098cf4 {"method":"GET","url":"http://localhost:8080/api/scans/scan_b9098cf4"}
+2026-02-25T18:47:04.453Z [info]: API Response: 200 GET http://localhost:8080/api/scans/scan_b9098cf4 {"status":200,"method":"GET","url":"http://localhost:8080/api/scans/scan_b9098cf4","bodyPreview":"{\"id\":\"scan_b9098cf4\",\"status\":\"COMPLETED\",\"startedAt\":\"2026-02-25T18:46:58.411Z\",\"completedAt\":\"2026-02-25T18:47:04.038Z\",\"scannedAssetsCount\":8,\"alertsCreatedCount\":8}"}
+2026-02-25T18:47:04.454Z [info]: Scan scan_b9098cf4 current status: COMPLETED
+2026-02-25T18:47:04.454Z [info]: Scan scan_b9098cf4 completed
+2026-02-25T18:47:04.454Z [info]: Step 3: Finding auto-remediate alert
+2026-02-25T18:47:04.457Z [info]: API Request: GET http://localhost:8080/api/alerts {"method":"GET","url":"http://localhost:8080/api/alerts"}
+2026-02-25T18:47:04.463Z [info]: API Response: 200 GET http://localhost:8080/api/alerts {"status":200,"method":"GET","url":"http://localhost:8080/api/alerts","bodyPreview":"[{\"id\":\"alert_889fd811\",\"runId\":\"scan_b9098cf4\",\"policyId\":\"policy_008\",\"policyName\":\"Shadow IT Detection\",\"severity\":\"CRITICAL\",\"status\":\"OPEN\",\"wasRemediated\":false,\"remediationOrigin\":\"NONE\",\"createdSeverity\":\"CRITICAL\",\"violationType\":\"PUBLIC_ACCESS\",\"assetCategory\":\"SAAS\",\"cloudProvider\":null,\"dataStoreType\":null,\"saasTool\":\"GITHUB\",\"assetDisplayName\":\"org-vukse9\",\"assetLocation\":\"GITHUB/org-vukse9\",\"assetId\":\"github-lzlgxi\",\"accountId\":\"org-lkg0\",\"asset\":{\"id\":\"github-lzlgxi\",\"type\":\"GITHU…"}
+2026-02-25T18:47:04.465Z [info]: Total alerts found: 8
