@@ -1,4 +1,6 @@
 import { test, expect } from '../../../fixtures';
+import type { AlertStatus } from '../../../src/api/types';
+import { lifecycleTableStatuses } from '../../alertStatusTestUtils';
 
 test.describe('Policy API — Component Tests', () => {
   test('GET /api/policy-config returns 200', async ({ api }) => {
@@ -14,51 +16,29 @@ test.describe('Policy API — Component Tests', () => {
     expect(config.labels, 'Policy config should include labels section').toBeTruthy();
 
     expect(Array.isArray(config.assets.cloudProviders), 'cloudProviders should be an array').toBe(true);
-    expect(
-      config.assets.cloudProviders.length,
-      'cloudProviders should not be empty'
-    ).toBeGreaterThan(0);
+    expect(config.assets.cloudProviders.length, 'cloudProviders should not be empty').toBeGreaterThan(0);
     expect(
       config.assets.cloudDataStoresByProvider,
-      'cloudDataStoresByProvider should be present'
+      'cloudDataStoresByProvider should be present',
     ).toBeTruthy();
-    expect(
-      Array.isArray(config.assets.saasTools),
-      'saasTools should be an array'
-    ).toBe(true);
+    expect(Array.isArray(config.assets.saasTools), 'saasTools should be an array').toBe(true);
 
-    expect(
-      Array.isArray(config.enums.violationTypes),
-      'violationTypes should be an array'
-    ).toBe(true);
-    expect(
-      config.enums.violationTypes.length,
-      'violationTypes should not be empty'
-    ).toBeGreaterThan(0);
+    expect(Array.isArray(config.enums.violationTypes), 'violationTypes should be an array').toBe(true);
+    expect(config.enums.violationTypes.length, 'violationTypes should not be empty').toBeGreaterThan(0);
     expect(
       config.enums.severities,
-      'Severities enum should contain all standard severity levels'
+      'Severities enum should contain all standard severity levels',
     ).toEqual(expect.arrayContaining(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']));
+    expect(Array.isArray(config.enums.alertStatuses), 'alertStatuses should be an array').toBe(true);
+    expect(config.enums.alertStatuses.length, 'alertStatuses should not be empty').toBeGreaterThan(0);
+    const expectedStatuses: AlertStatus[] = lifecycleTableStatuses;
     expect(
-      Array.isArray(config.enums.alertStatuses),
-      'alertStatuses should be an array'
-    ).toBe(true);
-    expect(
-      config.enums.alertStatuses.length,
-      'alertStatuses should not be empty'
-    ).toBeGreaterThan(0);
-    expect(
-      config.enums.remediationTypes,
-      'remediationTypes should be present'
-    ).toBeTruthy();
-    expect(
-      config.enums.remediationPriorities,
-      'remediationPriorities should be present'
-    ).toBeTruthy();
-    expect(
-      config.enums.remediationDueUnits,
-      'remediationDueUnits should be present'
-    ).toBeTruthy();
+      config.enums.alertStatuses.sort(),
+      'alertStatuses enum from policy-config should contain all backend AlertStatus values',
+    ).toEqual(expect.arrayContaining(expectedStatuses));
+    expect(config.enums.remediationTypes, 'remediationTypes should be present').toBeTruthy();
+    expect(config.enums.remediationPriorities, 'remediationPriorities should be present').toBeTruthy();
+    expect(config.enums.remediationDueUnits, 'remediationDueUnits should be present').toBeTruthy();
 
     expect(typeof config.labels, 'labels should be an object').toBe('object');
   });

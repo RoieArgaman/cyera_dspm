@@ -11,6 +11,7 @@
     "allure:open": "npx allure open allure-results",
     "allure:serve": "npx allure serve allure-results",
     "test:allure": "npx playwright test && npm run allure:open",
+    "test:parallel:allure": "npx playwright test --workers=4 && npm run allure:open",
     "typecheck": "tsc --noEmit",
     "start-platform": "cd .. && unzip -o cyera-automation/\"platform Assignment.zip\" && cd platform-home-assignment && docker compose up -d",
     "e2e": "npm run start-platform && npx playwright test"

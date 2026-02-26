@@ -2,6 +2,12 @@ import type { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 import { step } from 'decorators/stepDecorator';
 
+/** Column indices for alerts table (adjust if app column order changes). */
+const COL_STATUS = 3;
+const COL_AUTO_REMEDIATE = 4;
+const COL_POLICY = 0;
+const COL_ASSET = 1;
+
 export class AlertsPage extends BasePage {
   readonly alertsPageRoot: Locator;
   readonly alertsTable: Locator;
@@ -55,8 +61,8 @@ export class AlertsPage extends BasePage {
 
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
-      const statusCell = row.locator('td').nth(3);
-      const autoRemCell = row.locator('td').nth(4);
+      const statusCell = row.locator('td').nth(COL_STATUS);
+      const autoRemCell = row.locator('td').nth(COL_AUTO_REMEDIATE);
 
       const statusValue = (await statusCell.textContent())?.trim() ?? '';
       const autoRemValue = (await autoRemCell.textContent())?.trim() ?? '';
@@ -69,6 +75,42 @@ export class AlertsPage extends BasePage {
 
       if (matchesStatus && matchesAutoRem) {
         await row.click();
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Find the first alert row that is OPEN and matches the given policy name and asset (display or location).
+   * Returns the row index (0-based), or -1 if not found. Does not click the row.
+   */
+  @step('Find OPEN alert row by policy and asset')
+  async findOpenAlertRowByPolicyAndAsset(
+    policyName: string,
+    assetDisplayOrLocation: string
+  ): Promise<number> {
+    const rows = this.alertRows;
+    const count = await rows.count();
+    const policyNorm = policyName.trim();
+    const assetNorm = assetDisplayOrLocation.trim();
+
+    for (let i = 0; i < count; i++) {
+      const row = rows.nth(i);
+      const statusCell = row.locator('td').nth(COL_STATUS);
+      const policyCell = row.locator('td').nth(COL_POLICY);
+      const assetCell = row.locator('td').nth(COL_ASSET);
+
+      const statusValue = (await statusCell.textContent())?.trim() ?? '';
+      const policyValue = (await policyCell.textContent())?.trim() ?? '';
+      const assetValue = (await assetCell.textContent())?.trim() ?? '';
+
+      const isOpen = statusValue.toUpperCase().includes('OPEN');
+      const policyMatch = policyValue.includes(policyNorm) || policyNorm.includes(policyValue);
+      const assetMatch = assetValue.includes(assetNorm) || assetNorm.includes(assetValue);
+
+      if (isOpen && policyMatch && assetMatch) {
         return i;
       }
     }

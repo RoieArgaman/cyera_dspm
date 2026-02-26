@@ -22,7 +22,7 @@ setup('authenticate via browser and save session', async ({ page }) => {
   await page.locator('button[type="submit"]').click();
   await expect(
     page,
-    'Auth setup should land on the policies page after login'
+    'Auth setup should land on the policies page after login',
   ).toHaveURL(/\/policies$/, { timeout: 15_000 });
 
   // Save browser storage state

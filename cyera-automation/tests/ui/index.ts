@@ -2,6 +2,7 @@ import { test as base, expect } from '../../fixtures';
 import { waitForScanComplete } from '../../src/wait';
 import { logger } from 'logger';
 import type { ApiClient } from '../../src/api/ApiClient';
+import type { Alert } from '../../src/api/types';
 
 /** API may omit autoRemediate or use snake_case; treat as manual when not explicitly true. */
 function isManualRemediation(
@@ -41,6 +42,54 @@ async function ensureOpenManualRemediationAlert(api: ApiClient): Promise<void> {
     logger.info('Fixture: alert status set to OPEN');
   } else {
     logger.info('Fixture: candidate already OPEN, skipping update');
+  }
+}
+
+/**
+ * Resolves policy name and asset display/location from drawer values, falling back to API
+ * when either is missing. Use from specs to avoid if-statements in test bodies.
+ */
+export async function resolveAlertIdentityFromDrawerOrApi(params: {
+  policyName: string | null | undefined;
+  assetDisplayOrLocation: string | null | undefined;
+  api: ApiClient;
+  isAutoRemediate: (a: Alert | Record<string, unknown>) => boolean;
+}): Promise<{ policyName: string; assetDisplayOrLocation: string }> {
+  if (params.policyName && params.assetDisplayOrLocation) {
+    return {
+      policyName: params.policyName,
+      assetDisplayOrLocation: params.assetDisplayOrLocation,
+    };
+  }
+  logger.info('Policy/asset not in drawer; reading from API for identity');
+  const allAlerts = await params.api.alerts.getAll();
+  const autoRemAlert = allAlerts.find(
+    (a) =>
+      (a.status === 'OPEN' || a.status === 'REMEDIATION_IN_PROGRESS') &&
+      params.isAutoRemediate(a),
+  );
+  expect(autoRemAlert, 'Expected to find an auto-remediate alert for identity').toBeTruthy();
+  return {
+    policyName:
+      params.policyName || autoRemAlert!.policyName || autoRemAlert!.policyId || '',
+    assetDisplayOrLocation:
+      params.assetDisplayOrLocation ||
+      autoRemAlert!.assetDisplayName ||
+      autoRemAlert!.assetLocation ||
+      '',
+  };
+}
+
+/**
+ * Logs an expected-failure message when an identical OPEN alert was found at the given row index.
+ * Use from specs to avoid if-statements in test bodies; the assertion remains in the spec.
+ */
+export function logExpectedFailureIfIdenticalAlertFound(identicalRowIndex: number): void {
+  if (identicalRowIndex >= 0) {
+    logger.error(
+      `EXPECTED FAILURE: Found identical OPEN alert at row index ${identicalRowIndex}. ` +
+        `The scanning engine re-detects resolved violations and creates new OPEN alerts.`,
+    );
   }
 }
 
