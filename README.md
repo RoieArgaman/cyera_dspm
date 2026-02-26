@@ -110,6 +110,18 @@ Once started:
 
 **Login credentials:** `admin` / the password you set in `.env`
 
+To **stop** the platform later, run:
+
+```bash
+npm run stop-platform
+```
+
+To **view platform logs** while it is running, use:
+
+```bash
+npm run logs-platform
+```
+
 ### 4. Run tests
 
 ```bash
@@ -403,15 +415,17 @@ API_PORT=8080
 
 ## Stopping the Platform
 
-From the `platform-home-assignment/` directory (created by the start script):
+From `cyera-automation/` you can use npm scripts:
+
+```bash
+npm run stop-platform     # runs docker compose down in platform-home-assignment/
+npm run logs-platform     # tails docker compose logs -f in platform-home-assignment/
+```
+
+If you prefer to run Docker commands directly, go to the `platform-home-assignment/` directory (created by the start script):
 
 ```bash
 docker compose down
-```
-
-To view platform logs:
-
-```bash
 docker compose logs -f
 ```
 
