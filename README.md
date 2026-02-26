@@ -43,6 +43,21 @@ The DSPM platform scans cloud assets (AWS, GCP, GitHub, Snowflake, etc.), evalua
 | **Node.js** | 18+ (LTS recommended) |
 | **Docker** | Docker Desktop or Docker Engine — must be **running** before starting the platform |
 
+### Dependencies
+
+Installed automatically via `npm install`:
+
+| Package | Purpose |
+|---|---|
+| `@playwright/test` | Test runner and browser automation framework |
+| `typescript` | TypeScript compiler |
+| `axios` | HTTP client for REST API tests |
+| `dotenv` | Load environment variables from `.env` |
+| `winston` | Structured logging (stdout/stderr + file) |
+| `allure-playwright` | Allure report integration for Playwright |
+| `allure-commandline` | CLI to generate and serve Allure reports |
+| `allure-js-commons` | Shared Allure utilities |
+
 ---
 
 ## Quick Start
