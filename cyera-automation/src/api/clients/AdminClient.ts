@@ -1,23 +1,21 @@
 import { BaseApiClient } from './BaseApiClient';
+import { step } from 'decorators/stepDecorator';
+import type { AdminResetResponse, ApiHealthStatus } from '../types/admin';
 
 export class AdminClient extends BaseApiClient {
   constructor(baseUrl: string, token: string) {
     super(baseUrl, token);
   }
 
-  async resetData(): Promise<{ success: boolean; message: string }> {
-    const res = await this.requestWithStep<{ success: boolean; message: string }>(
-      'POST',
-      '/api/admin/reset',
-    );
+  @step('Reset test environment data')
+  async resetData(): Promise<AdminResetResponse> {
+    const res = await this.post<AdminResetResponse>('/api/admin/reset');
     return res.data;
   }
 
-  async health(): Promise<{ status: string; timestamp: string; service: string }> {
-    const res = await this.requestWithStep<{ status: string; timestamp: string; service: string }>(
-      'GET',
-      '/api/health',
-    );
+  @step('Check API health')
+  async health(): Promise<ApiHealthStatus> {
+    const res = await this.get<ApiHealthStatus>('/api/health');
     return res.data;
   }
 }

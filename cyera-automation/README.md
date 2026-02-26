@@ -56,7 +56,7 @@ For **Playwright Page Object and test guidelines**, see `AGENTS.md` in this dire
 
 ## Logging and test steps
 
-We use a centralized Winston logger (`src/logger.ts`) plus a Playwright step decorator (`src/test/stepDecorator.ts`).
+We use a centralized Winston logger (`src/logger/logger.ts`) plus a Playwright step decorator (`src/test/stepDecorator.ts`).
 
 - **Logger**
   - Use `logger.info` / `logger.debug` for normal operations.

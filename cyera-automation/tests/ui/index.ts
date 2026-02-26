@@ -1,11 +1,13 @@
 import { test as base, expect } from '../../fixtures';
 import { waitForScanComplete } from '../../src/wait';
-import { logger } from '../../src/logger';
+import { logger } from 'logger';
 import type { ApiClient } from '../../src/api/ApiClient';
 
 /** API may omit autoRemediate or use snake_case; treat as manual when not explicitly true. */
-function isManualRemediation(alert: { autoRemediate?: boolean } & Record<string, unknown>): boolean {
-  const ar = alert.autoRemediate ?? alert.auto_remediate;
+function isManualRemediation(
+  alert: { autoRemediate?: boolean } & Record<string, unknown>,
+): boolean {
+  const ar = alert.autoRemediate ?? (alert as Record<string, unknown>).auto_remediate;
   return ar !== true;
 }
 
@@ -22,7 +24,9 @@ async function ensureOpenManualRemediationAlert(api: ApiClient): Promise<void> {
 
   const alerts = await api.alerts.getAll();
   logger.info('Fixture: fetched alerts', { count: alerts.length });
-  const candidate = alerts.find((a) => isManualRemediation(a as Record<string, unknown>));
+  const candidate = alerts.find((a) =>
+    isManualRemediation(a as unknown as Record<string, unknown>),
+  );
   if (!candidate) {
     logger.error('Fixture: no alert with autoRemediate false (or unset) found');
     throw new Error(

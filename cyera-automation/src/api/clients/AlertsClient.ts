@@ -1,45 +1,60 @@
 import { BaseApiClient } from './BaseApiClient';
-import type { Alert, AlertStatus, AlertComment, CreateAlertPayload } from '../../types';
+import { step } from 'decorators/stepDecorator';
+import type {
+  Alert,
+  AlertStatus,
+  AlertComment,
+  CreateAlertPayload,
+} from '../types';
 
 export class AlertsClient extends BaseApiClient {
   constructor(baseUrl: string, token: string) {
     super(baseUrl, token);
   }
 
+  @step('List alerts with optional filters')
   async getAll(filters?: { status?: string }): Promise<Alert[]> {
     const params = filters?.status ? { status: filters.status } : undefined;
-    const res = await this.requestWithStep<Alert[]>('GET', '/api/alerts', { params });
+    const res = await this.get<Alert[]>('/api/alerts', { params });
     return res.data;
   }
 
+  @step('List open alerts')
   async getOpen(): Promise<Alert[]> {
     return this.getAll({ status: 'OPEN' });
   }
 
+  @step('Get alert by ID')
   async getById(id: string): Promise<Alert> {
-    const res = await this.requestWithStep<Alert>('GET', `/api/alerts/${id}`);
+    const res = await this.get<Alert>(`/api/alerts/${id}`);
     return res.data;
   }
 
+  @step('Create alert')
   async create(data: CreateAlertPayload): Promise<Alert> {
-    const res = await this.requestWithStep<Alert>('POST', '/api/alerts', { data });
+    const res = await this.post<Alert>('/api/alerts', { data });
     return res.data;
   }
 
+  @step('Update alert status')
   async updateStatus(id: string, status: AlertStatus): Promise<Alert> {
-    const res = await this.requestWithStep<Alert>('PATCH', `/api/alerts/${id}`, { data: { status } });
+    const res = await this.patch<Alert>(`/api/alerts/${id}`, {
+      data: { status },
+    });
     return res.data;
   }
 
+  @step('Add comment to alert')
   async addComment(id: string, message: string): Promise<AlertComment> {
-    const res = await this.requestWithStep<AlertComment>('POST', `/api/alerts/${id}/comments`, {
+    const res = await this.post<AlertComment>(`/api/alerts/${id}/comments`, {
       data: { message },
     });
     return res.data;
   }
 
+  @step('Trigger alert remediation')
   async remediate(id: string, note?: string): Promise<Alert> {
-    const res = await this.requestWithStep<Alert>('POST', `/api/alerts/${id}/remediate`, {
+    const res = await this.post<Alert>(`/api/alerts/${id}/remediate`, {
       data: { note },
     });
     return res.data;

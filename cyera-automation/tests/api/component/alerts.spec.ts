@@ -1,5 +1,5 @@
 import { test, expect } from '../index';
-import type { Alert, AlertStatus } from '../../../src/types';
+import type { Alert, AlertStatus } from '../../../src/api/types';
 
 test.describe('Alerts API — Component Tests', () => {
   test('GET all alerts returns 200 and array', async ({ api }) => {

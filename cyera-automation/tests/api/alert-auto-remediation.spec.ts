@@ -14,8 +14,8 @@
  */
 import { test, expect } from '../../fixtures';
 import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
-import { logger } from '../../src/logger';
-import type { Alert } from '../../src/types';
+import { logger } from 'logger';
+import type { Alert } from '../../src/api/types';
 
 /** Determine whether an alert is configured for auto-remediation. */
 function isAutoRemediate(alert: Alert | Record<string, unknown>): boolean {
@@ -51,7 +51,7 @@ test.describe('Alert Auto-Remediation — API', () => {
     const autoRemAlert = allAlerts.find(
       (a) =>
         (a.status === 'OPEN' || a.status === 'REMEDIATION_IN_PROGRESS') && isAutoRemediate(a),
-    );
+    )!;
 
     expect(autoRemAlert, 'Expected to find an auto-remediate alert').toBeTruthy();
     const alertId = autoRemAlert.id;

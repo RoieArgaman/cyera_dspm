@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { step } from '../../decorators/stepDecorator';
+import { step } from 'decorators/stepDecorator';
 
 export class LoginPage extends BasePage {
   constructor(page: Page) {
@@ -20,10 +20,12 @@ export class LoginPage extends BasePage {
     await this.page.waitForURL('**/policies', { timeout: 15_000 });
   }
 
+  @step('Check if login page is displayed')
   async isDisplayed(): Promise<boolean> {
     return this.page.locator('[data-testid="login-page"]').isVisible();
   }
 
+  @step('Read login error message')
   async getErrorMessage(): Promise<string | null> {
     const alert = this.page.locator('[role="alert"]');
     if (await alert.isVisible()) {

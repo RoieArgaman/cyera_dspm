@@ -1,8 +1,8 @@
 import { test as base, expect } from '../../fixtures';
 import { waitForScanComplete } from '../../src/wait';
-import { logger } from '../../src/logger';
+import { logger } from 'logger';
 import type { ApiClient } from '../../src/api/ApiClient';
-import type { Alert } from '../../src/types';
+import type { Alert } from '../../src/api/types';
 
 async function createAlertsViaScan(api: ApiClient): Promise<Alert[]> {
   logger.info('API fixture: starting scan to seed alerts');

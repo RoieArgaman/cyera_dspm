@@ -15,3 +15,4 @@ export interface PolicyConfig {
   };
   labels: Record<string, unknown>;
 }
+
