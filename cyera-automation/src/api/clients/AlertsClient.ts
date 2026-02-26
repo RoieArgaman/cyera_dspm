@@ -21,13 +21,8 @@ export class AlertsClient extends BaseApiClient {
 
   @step('List alerts with optional filters')
   async getAll(filters?: AlertFilters): Promise<Alert[]> {
-    const params: Record<string, string> = {};
-    if (filters?.status) params.status = filters.status;
-    if (filters?.severity) params.severity = filters.severity;
-    if (filters?.policyId) params.policyId = filters.policyId;
-    if (filters?.runId) params.runId = filters.runId;
     const res = await this.get<Alert[]>('/api/alerts', {
-      params: Object.keys(params).length > 0 ? params : undefined,
+      params: filters ? { ...filters } : undefined,
     });
     return res.data;
   }
