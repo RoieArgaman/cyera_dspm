@@ -66,7 +66,7 @@ cp .env.example .env
 Edit `.env` and set the admin password:
 
 ```
-ADMIN_PASSWORD=Aa123456
+ADMIN_PASSWORD=your_password_here
 ```
 
 > The `.env` file is git-ignored and must **not** be committed.
