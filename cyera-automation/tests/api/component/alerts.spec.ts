@@ -2,6 +2,7 @@ import { test, expect } from '../index';
 import type { Alert, AlertStatus } from '../../../src/api/types';
 import { waitForAlertStatus } from '../../../src/wait';
 import { lifecycleTableStatuses } from '../../alertStatusTestUtils';
+import { ensureAlertResolved, assertValidTransitionsMatchLifecycle } from '../helpers';
 
 test.describe('Alerts API — Component Tests', () => {
   test('GET all alerts returns 200 and array', async ({ api }) => {
@@ -47,16 +48,10 @@ test.describe('Alerts API — Component Tests', () => {
     expect(updated.status, 'Status should update from OPEN to IN_PROGRESS').toBe('IN_PROGRESS');
 
     // Invalid transition: IN_PROGRESS -> OPEN
-    try {
-      await api.alerts.updateStatus(alertId, 'OPEN' as AlertStatus);
-      expect(true, 'Expected the API to reject OPEN transition from IN_PROGRESS').toBe(false);
-    } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        expect(error.response?.status, 'Invalid transition should return HTTP 400').toBe(400);
-      } else {
-        throw error;
-      }
-    }
+    await expect(
+      api.alerts.updateStatus(alertId, 'OPEN' as AlertStatus),
+      'Invalid transition should return HTTP 400',
+    ).rejects.toMatchObject({ response: { status: 400 } });
 
     // Valid transition: IN_PROGRESS -> RESOLVED
     const resolved = await api.alerts.updateStatus(alertId, 'RESOLVED');
@@ -99,19 +94,16 @@ test.describe('Alerts API — Component Tests', () => {
     ]);
     const afterRemediation = await api.alerts.getById(alertId);
 
-    if (afterRemediation.status === 'REMEDIATED_WAITING_FOR_CUSTOMER') {
-      // REMEDIATED_WAITING_FOR_CUSTOMER -> RESOLVED
-      const resolvedFromAwaiting = await api.alerts.updateStatus(alertId, 'RESOLVED');
-      expect(
-        resolvedFromAwaiting.status,
-        'Status should update from REMEDIATED_WAITING_FOR_CUSTOMER to RESOLVED',
-      ).toBe('RESOLVED');
-    } else {
-      expect(
-        afterRemediation.status,
-        'Status after remediation should be REMEDIATED_WAITING_FOR_CUSTOMER or RESOLVED',
-      ).toBe('RESOLVED');
-    }
+    expect(
+      ['REMEDIATED_WAITING_FOR_CUSTOMER', 'RESOLVED'],
+      'Status after remediation should be REMEDIATED_WAITING_FOR_CUSTOMER or RESOLVED',
+    ).toContain(afterRemediation.status);
+
+    const resolvedAlert = await ensureAlertResolved(api, alertId);
+    expect(
+      resolvedAlert.status,
+      'Status should be RESOLVED (either already or after transition from REMEDIATED_WAITING_FOR_CUSTOMER)',
+    ).toBe('RESOLVED');
 
     // RESOLVED -> REOPEN
     const reopened = await api.alerts.updateStatus(alertId, 'REOPEN');
@@ -152,22 +144,10 @@ test.describe('Alerts API — Component Tests', () => {
     const invalidTargets: AlertStatus[] = ['OPEN', 'REMEDIATION_IN_PROGRESS'];
 
     for (const target of invalidTargets) {
-      try {
-        await api.alerts.updateStatus(alertId, target);
-        expect(
-          false,
-          `Expected the API to reject invalid transition IN_PROGRESS -> ${target}`,
-        ).toBe(true);
-      } catch (error: unknown) {
-        if (isAxiosError(error)) {
-          expect(
-            error.response?.status,
-            `Invalid transition IN_PROGRESS -> ${target} should return HTTP 400`,
-          ).toBe(400);
-        } else {
-          throw error;
-        }
-      }
+      await expect(
+        api.alerts.updateStatus(alertId, target),
+        `Invalid transition IN_PROGRESS -> ${target} should return HTTP 400`,
+      ).rejects.toMatchObject({ response: { status: 400 } });
     }
   });
 
@@ -183,18 +163,7 @@ test.describe('Alerts API — Component Tests', () => {
     const alert = alertsAfterScan[0];
     const fresh = await api.alerts.getById(alert.id);
 
-    if (!fresh.validTransitions) {
-      // If backend does not expose validTransitions yet, we skip with a clear message.
-      test.skip(true, 'Backend does not expose validTransitions on Alert; skipping metadata check');
-      return;
-    }
-
-    for (const status of fresh.validTransitions) {
-      expect(
-        lifecycleTableStatuses,
-        'validTransitions should only contain statuses from the lifecycle table',
-      ).toContain(status);
-    }
+    assertValidTransitionsMatchLifecycle(fresh, lifecycleTableStatuses, test, expect);
   });
 
   test('POST comment to alert succeeds', async ({ api, alertsAfterScan }) => {
@@ -215,7 +184,3 @@ test.describe('Alerts API — Component Tests', () => {
     expect(comment.createdAt, 'Comment should have a createdAt timestamp').toBeTruthy();
   });
 });
-
-function isAxiosError(error: unknown): error is { response?: { status: number; data: unknown } } {
-  return typeof error === 'object' && error !== null && 'response' in error;
-}

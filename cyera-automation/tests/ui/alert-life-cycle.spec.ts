@@ -1,4 +1,9 @@
-import { test, expect } from './index';
+import {
+  test,
+  expect,
+  resolveAlertIdentityFromDrawerOrApi,
+  logExpectedFailureIfIdenticalAlertFound,
+} from './index';
 import { Allure as allure } from '../../src/utils/AllureJsCommon';
 import { waitForScanComplete } from '../../src/wait';
 import { logger } from 'logger';
@@ -16,10 +21,7 @@ test.describe('Alert Life Cycle — UI', () => {
     expect(index, 'Expected to find an OPEN alert with autoRemediate OFF').toBeGreaterThanOrEqual(0);
 
     // Step 4: Open the alert detail drawer
-    await expect(
-      app.alertDetail.drawerRoot,
-      'Alert detail drawer should be visible after clicking an alert row',
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(app.alertDetail.drawerRoot, 'Alert detail drawer should be visible after clicking an alert row').toBeVisible({ timeout: 15_000 });
 
     // Step 5: Change status to IN_PROGRESS
     await app.alertDetail.changeStatus('In Progress');
@@ -31,10 +33,7 @@ test.describe('Alert Life Cycle — UI', () => {
     await app.alertDetail.remediate('Manual remediation initiated for security review');
 
     // Step 8: Wait for status to update (remediation is async, 10-50s)
-    await expect(
-      app.alertDetail.statusLabel,
-      'Status should eventually become Awaiting User Verification',
-    ).toHaveText(/Awaiting User Verification/i, { timeout: 120_000 });
+    await expect(app.alertDetail.statusLabel, 'Status should eventually become Awaiting User Verification',).toHaveText(/Awaiting User Verification/i, { timeout: 120_000 });
 
     // Step 9: Change status to RESOLVED
     await app.alertDetail.changeStatus('Resolved');
@@ -45,10 +44,9 @@ test.describe('Alert Life Cycle — UI', () => {
 
     // Step 11: Assert final status is RESOLVED in the UI
     const finalStatus = await app.alertDetail.getCurrentStatus();
-    expect(
-      finalStatus.toLowerCase(),
-      'Final alert status should indicate the alert is resolved',
-    ).toContain('resolved');
+    expect(finalStatus.toLowerCase(), 'Final alert status should indicate the alert is resolved').toContain(
+      'resolved',
+    );
 
     // Step 12: Verify backend alert status and comments for the alert that received this resolution comment
     const allAlerts = await api.alerts.getAll();
@@ -56,11 +54,7 @@ test.describe('Alert Life Cycle — UI', () => {
       (alert.comments || []).some((comment) => comment.message === resolutionComment),
     );
 
-    expect(
-      backendAlert,
-      'Expected to find backend alert with the resolution comment added in the manual remediation workflow',
-    ).toBeTruthy();
-
+    expect(backendAlert, 'Expected to find backend alert with the resolution comment added in the manual remediation workflow').toBeTruthy();
     expect(
       backendAlert!.status,
       'Backend alert status should be RESOLVED after manual remediation flow',
@@ -72,8 +66,7 @@ test.describe('Alert Life Cycle — UI', () => {
     ).toBeGreaterThan(0);
   });
 
-  test('Auto-remediation lifecycle with re-scan verification (expected to FAIL)', async ({app, isAutoRemediate, api,
-}) => {
+  test('Auto-remediation lifecycle with re-scan verification (expected to FAIL)', async ({app, isAutoRemediate, api}) => {
     await allure.suite('Alert Life Cycle');
 
     // Step 1: Start scan (API only — no scan UI)
@@ -98,20 +91,14 @@ test.describe('Alert Life Cycle — UI', () => {
       'Alert detail drawer should be visible after clicking an alert row',
     ).toBeVisible({ timeout: 15_000 });
 
-    let policyName = await app.alertDetail.getPolicyName();
-    let assetDisplayOrLocation = await app.alertDetail.getAssetDisplayOrLocation();
-    if (!policyName || !assetDisplayOrLocation) {
-      logger.info('Policy/asset not in drawer; reading from API for identity');
-      const allAlerts = await api.alerts.getAll();
-      const autoRemAlert = allAlerts.find(
-        (a) =>
-          (a.status === 'OPEN' || a.status === 'REMEDIATION_IN_PROGRESS') && isAutoRemediate(a),
-      );
-      expect(autoRemAlert, 'Expected to find an auto-remediate alert for identity').toBeTruthy();
-      policyName = policyName || autoRemAlert!.policyName || autoRemAlert!.policyId;
-      assetDisplayOrLocation =
-        assetDisplayOrLocation || autoRemAlert!.assetDisplayName || autoRemAlert!.assetLocation;
-    }
+    const drawerPolicyName = await app.alertDetail.getPolicyName();
+    const drawerAssetDisplayOrLocation = await app.alertDetail.getAssetDisplayOrLocation();
+    const { policyName, assetDisplayOrLocation } = await resolveAlertIdentityFromDrawerOrApi({
+      policyName: drawerPolicyName,
+      assetDisplayOrLocation: drawerAssetDisplayOrLocation,
+      api,
+      isAutoRemediate,
+    });
     logger.info(`Captured identity: policy=${policyName}, asset=${assetDisplayOrLocation}`);
 
     // Step 5: Wait for auto-remediation to complete (UI)
@@ -143,13 +130,7 @@ test.describe('Alert Life Cycle — UI', () => {
       policyName,
       assetDisplayOrLocation,
     );
-
-    if (identicalRowIndex >= 0) {
-      logger.error(
-        `EXPECTED FAILURE: Found identical OPEN alert at row index ${identicalRowIndex}. ` +
-          `The scanning engine re-detects resolved violations and creates new OPEN alerts.`,
-      );
-    }
+    logExpectedFailureIfIdenticalAlertFound(identicalRowIndex);
 
     expect(
       identicalRowIndex,
