@@ -9,8 +9,8 @@
  * a new OPEN alert even after the previous one was resolved. This is a known
  * limitation / intentional behavior of the mock platform.
  *
- * Cleanup: The test resets data at the end (via admin/reset) to return the
- * system to the original state, as required by the assignment.
+ * Cleanup is handled by the beforeEach reset in fixtures/index.ts
+ * (when running with a single worker).
  */
 import { test, expect } from '../../fixtures';
 import { waitForScanComplete, waitForAlertStatus } from '../../src/wait';
@@ -102,12 +102,5 @@ test.describe('Alert Auto-Remediation — API', () => {
       identicalOpenAlerts,
       'Expected no identical OPEN alerts after second scan (expected to fail by design)'
     ).toHaveLength(0);
-  });
-
-  // Cleanup: Reset data to return the system to the original state
-  test.afterEach(async ({ api }) => {
-    logger.info('Cleanup: resetting environment data after auto-remediation test');
-    await api.admin.resetData();
-    logger.info('Cleanup: environment reset completed');
   });
 });
