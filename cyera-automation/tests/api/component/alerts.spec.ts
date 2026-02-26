@@ -1,5 +1,7 @@
 import { test, expect } from '../index';
 import type { Alert, AlertStatus } from '../../../src/api/types';
+import { waitForAlertStatus } from '../../../src/wait';
+import { lifecycleTableStatuses } from '../../alertStatusTestUtils';
 
 test.describe('Alerts API — Component Tests', () => {
   test('GET all alerts returns 200 and array', async ({ api }) => {
@@ -17,10 +19,7 @@ test.describe('Alerts API — Component Tests', () => {
   });
 
   test('GET alert by ID returns correct alert', async ({ api, alertsAfterScan }) => {
-    expect(
-      alertsAfterScan.length,
-      'Scan should produce at least one alert to test GET by ID',
-    ).toBeGreaterThan(0);
+    expect(alertsAfterScan.length, 'Scan should produce at least one alert to test GET by ID').toBeGreaterThan(0);
 
     const targetId = alertsAfterScan[0].id;
     const alert = await api.alerts.getById(targetId);
@@ -66,6 +65,136 @@ test.describe('Alerts API — Component Tests', () => {
     // Cleanup: reopen so other tests can use it
     const reopened = await api.alerts.updateStatus(alertId, 'REOPEN');
     expect(reopened.status, 'Status should update from RESOLVED back to REOPEN for cleanup').toBe('REOPEN');
+  });
+
+  test('PATCH alert status supports full lifecycle transitions from table', async ({
+    api,
+    alertsAfterScan,
+  }) => {
+    expect(
+      alertsAfterScan.length,
+      'Scan should produce at least one alert for full lifecycle testing',
+    ).toBeGreaterThan(0);
+
+    const openAlert = alertsAfterScan.find((a: Alert) => a.status === 'OPEN');
+    expect(openAlert, 'Need an OPEN alert for full lifecycle testing').toBeTruthy();
+
+    const alertId = openAlert!.id;
+
+    // OPEN -> IN_PROGRESS
+    const inProgress = await api.alerts.updateStatus(alertId, 'IN_PROGRESS');
+    expect(inProgress.status, 'Status should update from OPEN to IN_PROGRESS for lifecycle test').toBe('IN_PROGRESS');
+
+    // IN_PROGRESS -> REMEDIATION_IN_PROGRESS (via remediation endpoint)
+    const remediationStarted = await api.alerts.remediate(alertId, 'API lifecycle test remediation');
+    expect(
+      ['REMEDIATION_IN_PROGRESS', 'REMEDIATED_WAITING_FOR_CUSTOMER', 'RESOLVED'],
+      'Starting remediation from IN_PROGRESS should move alert to REMEDIATION_IN_PROGRESS or later lifecycle status',
+    ).toContain(remediationStarted.status);
+
+    // Wait until the system-driven remediation flow completes to REMEDIATED_WAITING_FOR_CUSTOMER or RESOLVED
+    await waitForAlertStatus(api, alertId, [
+      'REMEDIATED_WAITING_FOR_CUSTOMER',
+      'RESOLVED',
+    ]);
+    const afterRemediation = await api.alerts.getById(alertId);
+
+    if (afterRemediation.status === 'REMEDIATED_WAITING_FOR_CUSTOMER') {
+      // REMEDIATED_WAITING_FOR_CUSTOMER -> RESOLVED
+      const resolvedFromAwaiting = await api.alerts.updateStatus(alertId, 'RESOLVED');
+      expect(
+        resolvedFromAwaiting.status,
+        'Status should update from REMEDIATED_WAITING_FOR_CUSTOMER to RESOLVED',
+      ).toBe('RESOLVED');
+    } else {
+      expect(
+        afterRemediation.status,
+        'Status after remediation should be REMEDIATED_WAITING_FOR_CUSTOMER or RESOLVED',
+      ).toBe('RESOLVED');
+    }
+
+    // RESOLVED -> REOPEN
+    const reopened = await api.alerts.updateStatus(alertId, 'REOPEN');
+    expect(
+      reopened.status,
+      'Status should update from RESOLVED to REOPEN at the end of the lifecycle',
+    ).toBe('REOPEN');
+
+    // REOPEN -> IN_PROGRESS
+    const inProgressAgain = await api.alerts.updateStatus(alertId, 'IN_PROGRESS');
+    expect(
+      inProgressAgain.status,
+      'Status should update from REOPEN back to IN_PROGRESS',
+    ).toBe('IN_PROGRESS');
+  });
+
+  test('PATCH alert status rejects invalid transitions from lifecycle table', async ({
+    api,
+    alertsAfterScan,
+  }) => {
+    expect(
+      alertsAfterScan.length,
+      'Scan should produce at least one alert for invalid transition testing',
+    ).toBeGreaterThan(0);
+
+    const openAlert = alertsAfterScan.find((a: Alert) => a.status === 'OPEN');
+    expect(openAlert, 'Need an OPEN alert for invalid transition testing').toBeTruthy();
+
+    const alertId = openAlert!.id;
+
+    // Move to IN_PROGRESS to exercise invalid transitions from there.
+    const inProgress = await api.alerts.updateStatus(alertId, 'IN_PROGRESS');
+    expect(
+      inProgress.status,
+      'Status should update from OPEN to IN_PROGRESS before invalid transition checks',
+    ).toBe('IN_PROGRESS');
+
+    const invalidTargets: AlertStatus[] = ['OPEN', 'REMEDIATION_IN_PROGRESS'];
+
+    for (const target of invalidTargets) {
+      try {
+        await api.alerts.updateStatus(alertId, target);
+        expect(
+          false,
+          `Expected the API to reject invalid transition IN_PROGRESS -> ${target}`,
+        ).toBe(true);
+      } catch (error: unknown) {
+        if (isAxiosError(error)) {
+          expect(
+            error.response?.status,
+            `Invalid transition IN_PROGRESS -> ${target} should return HTTP 400`,
+          ).toBe(400);
+        } else {
+          throw error;
+        }
+      }
+    }
+  });
+
+  test('Alert validTransitions metadata matches lifecycle table for a sample alert', async ({
+    api,
+    alertsAfterScan,
+  }) => {
+    expect(
+      alertsAfterScan.length,
+      'Scan should produce at least one alert for validTransitions metadata testing',
+    ).toBeGreaterThan(0);
+
+    const alert = alertsAfterScan[0];
+    const fresh = await api.alerts.getById(alert.id);
+
+    if (!fresh.validTransitions) {
+      // If backend does not expose validTransitions yet, we skip with a clear message.
+      test.skip(true, 'Backend does not expose validTransitions on Alert; skipping metadata check');
+      return;
+    }
+
+    for (const status of fresh.validTransitions) {
+      expect(
+        lifecycleTableStatuses,
+        'validTransitions should only contain statuses from the lifecycle table',
+      ).toContain(status);
+    }
   });
 
   test('POST comment to alert succeeds', async ({ api, alertsAfterScan }) => {

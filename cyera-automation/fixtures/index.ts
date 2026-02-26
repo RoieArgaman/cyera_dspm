@@ -4,14 +4,24 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { ApiClient } from '../src/api/ApiClient';
 import { WebApp } from '../src/web/WebApp';
+import type { Alert } from '../src/api/types';
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 const API_URL = process.env.API_URL || 'http://localhost:8080';
 
+function isAutoRemediate(alert: Alert | Record<string, unknown>): boolean {
+  const a = alert as Alert;
+  const r = alert as Record<string, unknown>;
+  const direct = (r.autoRemediate ?? r.auto_remediate) as boolean | undefined;
+  const snapshot = a.policySnapshot?.autoRemediate;
+  return direct === true || snapshot === true;
+}
+
 export const test = base.extend<{
   app: WebApp;
   api: ApiClient;
+  isAutoRemediate: (alert: Alert | Record<string, unknown>) => boolean;
 }>({
   app: async ({ page }, use) => {
     await use(new WebApp(page));
@@ -23,6 +33,9 @@ export const test = base.extend<{
     }
     const tokenData = JSON.parse(fs.readFileSync(tokenPath, 'utf-8'));
     await use(new ApiClient(API_URL, tokenData.token));
+  },
+  isAutoRemediate: async ({}, use) => {
+    await use(isAutoRemediate);
   },
 });
 

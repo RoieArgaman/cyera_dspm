@@ -10,6 +10,9 @@ export class AlertDetailPage extends BasePage {
   private readonly remediationNoteInput: Locator;
   private readonly commentTextarea: Locator;
   private readonly postCommentButton: Locator;
+  private readonly policyNameLabel: Locator;
+  private readonly assetLocationLabel: Locator;
+  private readonly assetDisplayLabel: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -21,6 +24,9 @@ export class AlertDetailPage extends BasePage {
     this.remediationNoteInput = page.locator('textarea[aria-label="Remediation note"]');
     this.commentTextarea = page.locator('textarea[aria-label="Comment message"]');
     this.postCommentButton = page.getByRole('button', { name: 'Post Comment' });
+    this.policyNameLabel = this.drawer.getByTestId('alert-policy-name');
+    this.assetLocationLabel = this.drawer.getByTestId('alert-asset-location');
+    this.assetDisplayLabel = this.drawer.getByTestId('alert-asset-display');
   }
 
   get drawerRoot(): Locator {
@@ -80,6 +86,36 @@ export class AlertDetailPage extends BasePage {
   @step('Get current alert status from drawer')
   async getCurrentStatus(): Promise<string> {
     return (await this.statusSelect.textContent())?.trim() ?? '';
+  }
+
+  /**
+   * Read policy name from the drawer. Prefers data-testid="alert-policy-name"; returns '' if not found.
+   */
+  @step('Get policy name from alert details drawer')
+  async getPolicyName(): Promise<string> {
+    if ((await this.policyNameLabel.count()) === 0) return '';
+    return (await this.policyNameLabel.textContent())?.trim() ?? '';
+  }
+
+  /**
+   * Read asset display name or location from the drawer. Prefers data-testid="alert-asset-location" then "alert-asset-display"; returns '' if not found.
+   */
+  @step('Get asset display or location from alert details drawer')
+  async getAssetDisplayOrLocation(): Promise<string> {
+    if ((await this.assetLocationLabel.count()) > 0) {
+      return (await this.assetLocationLabel.textContent())?.trim() ?? '';
+    }
+    if ((await this.assetDisplayLabel.count()) > 0) {
+      return (await this.assetDisplayLabel.textContent())?.trim() ?? '';
+    }
+    return '';
+  }
+
+  @step('Get alert identity (policy + asset) from alert details drawer')
+  async getIdentity(): Promise<{ policyName: string; assetDisplayOrLocation: string }> {
+    const policyName = await this.getPolicyName();
+    const assetDisplayOrLocation = await this.getAssetDisplayOrLocation();
+    return { policyName, assetDisplayOrLocation };
   }
 
   @step('Close alert details drawer')
